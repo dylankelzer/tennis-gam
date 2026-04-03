@@ -1,0 +1,1620 @@
+[gd_resource type="Resource" script_class="CardLibraryResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/resources/card_content_resource.gd" id="1_al0g2"]
+[ext_resource type="Script" path="res://scripts/data/resources/card_library_resource.gd" id="2_1udgk"]
+
+[sub_resource type="Resource" id="Resource_al0g2"]
+script = ExtResource("1_al0g2")
+id = "ace_hunter"
+name = "Ace Hunter"
+cost = 2
+description = "Deal 18 damage. Can only open a point while serving. Exhaust."
+tags = PackedStringArray("serve", "power")
+effects = {
+"damage": 18,
+"exhaust": true
+}
+upgrade_to = "ace_hunter_plus"
+category = "shot"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact", "special")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_1udgk"]
+script = ExtResource("1_al0g2")
+id = "ace_hunter_plus"
+name = "Ace Hunter+"
+cost = 2
+description = "Deal 18 damage. Can only open a point while serving. Exhaust. Upgraded: +3 pressure."
+tags = PackedStringArray("serve", "power")
+effects = {
+"damage": 21,
+"exhaust": true
+}
+category = "shot"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact", "special")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_ghmn2"]
+script = ExtResource("1_al0g2")
+id = "approach_shot"
+name = "Approach Shot"
+description = "Deal 8 damage. Your next Net card this turn gets +6 damage."
+tags = PackedStringArray("net", "tempo")
+effects = {
+"damage": 8,
+"next_net_bonus_damage": 6
+}
+upgrade_to = "approach_shot_plus"
+category = "shot"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "enhancer")
+
+[sub_resource type="Resource" id="Resource_53v84"]
+script = ExtResource("1_al0g2")
+id = "approach_shot_plus"
+name = "Approach Shot+"
+description = "Deal 8 damage. Your next Net card this turn gets +6 damage. Upgraded: +3 pressure."
+tags = PackedStringArray("net", "tempo")
+effects = {
+"damage": 11,
+"next_net_bonus_damage": 8
+}
+category = "shot"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "enhancer")
+
+[sub_resource type="Resource" id="Resource_fvu6g"]
+script = ExtResource("1_al0g2")
+id = "backhand_counter_return"
+name = "Backhand Counter Return"
+description = "Deal 7 damage and open the court with a sharp backhand counter."
+tags = PackedStringArray("return", "down_the_line", "control")
+effects = {
+"damage": 7,
+"open_court": 1
+}
+upgrade_to = "backhand_counter_return_plus"
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_4mtfa"]
+script = ExtResource("1_al0g2")
+id = "backhand_counter_return_plus"
+name = "Backhand Counter Return+"
+description = "Deal 7 damage and open the court with a sharp backhand counter. Upgraded: +3 pressure."
+tags = PackedStringArray("return", "down_the_line", "control")
+effects = {
+"damage": 10,
+"open_court": 2
+}
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_c78kr"]
+script = ExtResource("1_al0g2")
+id = "backhand_redirect"
+name = "Backhand Redirect"
+description = "Deal 7 damage and apply 1 Pressure with a redirected change of direction."
+tags = PackedStringArray("control", "rally", "down_the_line")
+effects = {
+"damage": 7,
+"pressure": 1
+}
+upgrade_to = "backhand_redirect_plus"
+category = "shot"
+shot_family = "Backhand"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_kcviq"]
+script = ExtResource("1_al0g2")
+id = "backhand_redirect_plus"
+name = "Backhand Redirect+"
+description = "Deal 7 damage and apply 1 Pressure with a redirected change of direction. Upgraded: +3 pressure."
+tags = PackedStringArray("control", "rally", "down_the_line")
+effects = {
+"damage": 10,
+"pressure": 2
+}
+category = "shot"
+shot_family = "Backhand"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_a4x70"]
+script = ExtResource("1_al0g2")
+id = "basic_volley"
+name = "Basic Volley"
+description = "Gain 5 Guard and deal 8 damage. Strongest when you close in."
+tags = PackedStringArray("net", "basic", "volley")
+effects = {
+"damage": 8,
+"guard": 5
+}
+upgrade_to = "basic_volley_plus"
+category = "shot"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "enhancer")
+
+[sub_resource type="Resource" id="Resource_akpx7"]
+script = ExtResource("1_al0g2")
+id = "basic_volley_plus"
+name = "Basic Volley+"
+description = "Gain 5 Guard and deal 8 damage. Strongest when you close in. Upgraded: +3 guard, +3 pressure."
+tags = PackedStringArray("net", "basic", "volley")
+effects = {
+"damage": 11,
+"guard": 8
+}
+category = "shot"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "enhancer")
+
+[sub_resource type="Resource" id="Resource_5l42k"]
+script = ExtResource("1_al0g2")
+id = "block_return"
+name = "Block Return"
+cost = 0
+description = "Deal 2 damage, gain 6 Guard, and if you are returning serve, draw 1."
+tags = PackedStringArray("return", "control", "footwork")
+effects = {
+"damage": 2,
+"draw_if_returning": 1,
+"guard": 6
+}
+upgrade_to = "block_return_plus"
+category = "footwork"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "enhancer")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_wpm8n"]
+script = ExtResource("1_al0g2")
+id = "block_return_plus"
+name = "Block Return+"
+cost = 0
+description = "Deal 2 damage, gain 6 Guard, and if you are returning serve, draw 1. Upgraded: +3 pressure, +3 guard."
+tags = PackedStringArray("return", "control", "footwork")
+effects = {
+"damage": 5,
+"draw_if_returning": 1,
+"guard": 9
+}
+category = "footwork"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "enhancer")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_0q83v"]
+script = ExtResource("1_al0g2")
+id = "chip_return"
+name = "Chip Return"
+description = "Deal 5 damage with a low chip return and apply 1 Pressure."
+tags = PackedStringArray("return", "slice", "control")
+effects = {
+"damage": 5,
+"pressure": 1
+}
+upgrade_to = "chip_return_plus"
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_al4m3"]
+script = ExtResource("1_al0g2")
+id = "chip_return_plus"
+name = "Chip Return+"
+description = "Deal 5 damage with a low chip return and apply 1 Pressure. Upgraded: +3 pressure."
+tags = PackedStringArray("return", "slice", "control")
+effects = {
+"damage": 8,
+"pressure": 2
+}
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_t7ftd"]
+script = ExtResource("1_al0g2")
+id = "counterweighted_handle"
+name = "Counterweighted Handle"
+description = "Modifier - Racquet Weight. Gain 4 Guard, then equip a counterweighted build for the match. Net and Control shots gain +3 pressure and Control gains +3% accuracy, but lost points cost +1 extra Condition. Exhaust."
+tags = PackedStringArray("modifier", "racquet", "weight", "tempo", "control")
+effects = {
+"exhaust": true,
+"guard": 4,
+"racquet_modifiers": {
+"control_accuracy_bonus": 0.03,
+"control_pressure_bonus": 3,
+"guard_bonus": 1,
+"net_pressure_bonus": 3,
+"point_condition_penalty": 1
+},
+"racquet_weight_type": "Counterweighted Handle"
+}
+upgrade_to = "counterweighted_handle_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_8qg6c"]
+script = ExtResource("1_al0g2")
+id = "counterweighted_handle_plus"
+name = "Counterweighted Handle+"
+description = "Modifier - Racquet Weight. Gain 4 Guard, then equip a counterweighted build for the match. Net and Control shots gain +3 pressure and Control gains +3% accuracy, but lost points cost +1 extra Condition. Exhaust. Upgraded: +3 guard, stronger frame tuning."
+tags = PackedStringArray("modifier", "racquet", "weight", "tempo", "control")
+effects = {
+"exhaust": true,
+"guard": 7,
+"racquet_modifiers": {
+"control_accuracy_bonus": 0.05,
+"control_pressure_bonus": 5,
+"guard_bonus": 2,
+"net_pressure_bonus": 5,
+"point_condition_penalty": 0
+},
+"racquet_weight_type": "Counterweighted Handle"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_jphj7"]
+script = ExtResource("1_al0g2")
+id = "crosscourt_rally"
+name = "Crosscourt Rally"
+description = "Deal 5 damage, open the court, and if you already played a shot this turn, draw 1."
+tags = PackedStringArray("rally", "basic", "crosscourt")
+effects = {
+"combo_draw": 1,
+"damage": 5,
+"open_court": 1
+}
+upgrade_to = "crosscourt_rally_plus"
+category = "shot"
+shot_family = "Crosscourt"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_qfhax"]
+script = ExtResource("1_al0g2")
+id = "crosscourt_rally_plus"
+name = "Crosscourt Rally+"
+description = "Deal 5 damage, open the court, and if you already played a shot this turn, draw 1. Upgraded: +3 pressure, +1 draw."
+tags = PackedStringArray("rally", "basic", "crosscourt")
+effects = {
+"combo_draw": 2,
+"damage": 8,
+"open_court": 2
+}
+category = "shot"
+shot_family = "Crosscourt"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_e3uox"]
+script = ExtResource("1_al0g2")
+id = "crowd_noise_debuff"
+name = "Crowd Noise"
+cost = 99
+description = "Boss Debuff. The stadium roar rattles the special slot. Unplayable. End turn: gain 1 Fatigue."
+tags = PackedStringArray("special", "boss_debuff")
+effects = {
+"fatigue": 1
+}
+category = "debuff"
+shot_family = "Rally"
+slot_roles = PackedStringArray("special")
+
+[sub_resource type="Resource" id="Resource_oifku"]
+script = ExtResource("1_al0g2")
+id = "deep_return"
+name = "Deep Return"
+description = "Deal 6 damage with depth. On a return point, open the court and gain 1 Focus."
+tags = PackedStringArray("return", "rally", "crosscourt")
+effects = {
+"damage": 6,
+"focus_if_returning": 1,
+"open_court": 1
+}
+upgrade_to = "deep_return_plus"
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_0n06d"]
+script = ExtResource("1_al0g2")
+id = "deep_return_plus"
+name = "Deep Return+"
+description = "Deal 6 damage with depth. On a return point, open the court and gain 1 Focus. Upgraded: +3 pressure."
+tags = PackedStringArray("return", "rally", "crosscourt")
+effects = {
+"damage": 9,
+"focus_if_returning": 1,
+"open_court": 2
+}
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_yvdow"]
+script = ExtResource("1_al0g2")
+id = "down_the_line"
+name = "Down The Line"
+description = "Deal 7 damage. Riskier, but deadly after you pull the court open."
+tags = PackedStringArray("rally", "control", "down_the_line")
+effects = {
+"damage": 7
+}
+upgrade_to = "down_the_line_plus"
+category = "shot"
+shot_family = "Down The Line"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_uw2a5"]
+script = ExtResource("1_al0g2")
+id = "down_the_line_plus"
+name = "Down The Line+"
+description = "Deal 7 damage. Riskier, but deadly after you pull the court open. Upgraded: +3 pressure."
+tags = PackedStringArray("rally", "control", "down_the_line")
+effects = {
+"damage": 10
+}
+category = "shot"
+shot_family = "Down The Line"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_lqvok"]
+script = ExtResource("1_al0g2")
+id = "drop_shot"
+name = "Drop Shot"
+description = "Deal 4 damage, pull a deep opponent forward, and apply 2 Open Court."
+tags = PackedStringArray("control", "trick", "drop")
+effects = {
+"damage": 4,
+"open_court": 2
+}
+upgrade_to = "drop_shot_plus"
+category = "shot"
+shot_family = "Drop Shot"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_ysatw"]
+script = ExtResource("1_al0g2")
+id = "drop_shot_plus"
+name = "Drop Shot+"
+description = "Deal 4 damage, pull a deep opponent forward, and apply 2 Open Court. Upgraded: +3 pressure."
+tags = PackedStringArray("control", "trick", "drop")
+effects = {
+"damage": 7,
+"open_court": 3
+}
+category = "shot"
+shot_family = "Drop Shot"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_4vmrf"]
+script = ExtResource("1_al0g2")
+id = "elastic_chase"
+name = "Elastic Chase"
+cost = 0
+description = "Gain 6 Guard and draw 1. If this is your first Footwork card, gain 1 Momentum."
+tags = PackedStringArray("footwork", "combo")
+effects = {
+"draw": 1,
+"first_footwork_momentum": 1,
+"guard": 6
+}
+upgrade_to = "elastic_chase_plus"
+category = "footwork"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_1d5wn"]
+script = ExtResource("1_al0g2")
+id = "elastic_chase_plus"
+name = "Elastic Chase+"
+cost = 0
+description = "Gain 6 Guard and draw 1. If this is your first Footwork card, gain 1 Momentum. Upgraded: +3 guard, +1 draw."
+tags = PackedStringArray("footwork", "combo")
+effects = {
+"draw": 2,
+"first_footwork_momentum": 2,
+"guard": 9
+}
+category = "footwork"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_r2rkp"]
+script = ExtResource("1_al0g2")
+id = "endurance_training"
+name = "Endurance Training"
+description = "Gain 6 Guard, recover 1 Stamina next turn, and increase Endurance scaling for the combat."
+tags = PackedStringArray("skill", "training")
+effects = {
+"endurance_scaling": 1,
+"guard": 6,
+"next_turn_stamina": 1
+}
+upgrade_to = "endurance_training_plus"
+category = "focus"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_yoqcb"]
+script = ExtResource("1_al0g2")
+id = "endurance_training_plus"
+name = "Endurance Training+"
+description = "Gain 6 Guard, recover 1 Stamina next turn, and increase Endurance scaling for the combat. Upgraded: +3 guard, +1 extra stamina next turn."
+tags = PackedStringArray("skill", "training")
+effects = {
+"endurance_scaling": 2,
+"guard": 9,
+"next_turn_stamina": 2
+}
+category = "focus"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_e8col"]
+script = ExtResource("1_al0g2")
+id = "extra_long_leverage_frame"
+name = "Extra-Long Leverage Build"
+description = "Modifier - Racquet Weight. Equip an extra-long frame for the match. Serves gain +8 pressure and Power shots gain +5, but lost points cost +3 extra Condition and long rallies add Fatigue. Exhaust."
+tags = PackedStringArray("modifier", "racquet", "weight", "serve", "power")
+effects = {
+"exhaust": true,
+"racquet_modifiers": {
+"long_rally_fatigue": 1,
+"point_condition_penalty": 3,
+"power_pressure_bonus": 5,
+"serve_pressure_bonus": 8
+},
+"racquet_weight_type": "Extra-Long Lever"
+}
+upgrade_to = "extra_long_leverage_frame_plus"
+category = "modifier"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact", "modifier", "special")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_i1kud"]
+script = ExtResource("1_al0g2")
+id = "extra_long_leverage_frame_plus"
+name = "Extra-Long Leverage Build+"
+description = "Modifier - Racquet Weight. Equip an extra-long frame for the match. Serves gain +8 pressure and Power shots gain +5, but lost points cost +3 extra Condition and long rallies add Fatigue. Exhaust. Upgraded: stronger frame tuning."
+tags = PackedStringArray("modifier", "racquet", "weight", "serve", "power")
+effects = {
+"exhaust": true,
+"racquet_modifiers": {
+"long_rally_fatigue": 2,
+"point_condition_penalty": 2,
+"power_pressure_bonus": 7,
+"serve_pressure_bonus": 10
+},
+"racquet_weight_type": "Extra-Long Lever"
+}
+category = "modifier"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact", "modifier", "special")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_kpk33"]
+script = ExtResource("1_al0g2")
+id = "flat_cannon"
+name = "Flat Cannon"
+cost = 2
+description = "Deal 14 damage."
+tags = PackedStringArray("power", "strike")
+effects = {
+"damage": 14
+}
+upgrade_to = "flat_cannon_plus"
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "special")
+
+[sub_resource type="Resource" id="Resource_y1isp"]
+script = ExtResource("1_al0g2")
+id = "flat_cannon_plus"
+name = "Flat Cannon+"
+cost = 2
+description = "Deal 14 damage. Upgraded: +3 pressure."
+tags = PackedStringArray("power", "strike")
+effects = {
+"damage": 17
+}
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "special")
+
+[sub_resource type="Resource" id="Resource_2fk43"]
+script = ExtResource("1_al0g2")
+id = "head_light_control_frame"
+name = "Head-Light Control Frame"
+description = "Modifier - Racquet Weight. Gain 5 Guard, then equip a head-light control frame for the match. Control shots gain +4 pressure and +6% accuracy, but lost points cost +1 extra Condition. Exhaust."
+tags = PackedStringArray("modifier", "racquet", "weight", "control")
+effects = {
+"exhaust": true,
+"guard": 5,
+"racquet_modifiers": {
+"control_accuracy_bonus": 0.06,
+"control_pressure_bonus": 4,
+"guard_bonus": 1,
+"point_condition_penalty": 1
+},
+"racquet_weight_type": "Head-Light Control"
+}
+upgrade_to = "head_light_control_frame_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_aitot"]
+script = ExtResource("1_al0g2")
+id = "head_light_control_frame_plus"
+name = "Head-Light Control Frame+"
+description = "Modifier - Racquet Weight. Gain 5 Guard, then equip a head-light control frame for the match. Control shots gain +4 pressure and +6% accuracy, but lost points cost +1 extra Condition. Exhaust. Upgraded: +3 guard, stronger frame tuning."
+tags = PackedStringArray("modifier", "racquet", "weight", "control")
+effects = {
+"exhaust": true,
+"guard": 8,
+"racquet_modifiers": {
+"control_accuracy_bonus": 0.08,
+"control_pressure_bonus": 6,
+"guard_bonus": 2,
+"point_condition_penalty": 0
+},
+"racquet_weight_type": "Head-Light Control"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_1qji8"]
+script = ExtResource("1_al0g2")
+id = "highlight_reel"
+name = "Highlight Reel"
+cost = 2
+description = "Deal 10 damage, apply 1 Open Court, then draw 2."
+tags = PackedStringArray("signature", "tempo")
+effects = {
+"damage": 10,
+"draw": 2,
+"open_court": 1
+}
+upgrade_to = "highlight_reel_plus"
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_iqj3f"]
+script = ExtResource("1_al0g2")
+id = "highlight_reel_plus"
+name = "Highlight Reel+"
+cost = 2
+description = "Deal 10 damage, apply 1 Open Court, then draw 2. Upgraded: +3 pressure, +1 draw."
+tags = PackedStringArray("signature", "tempo")
+effects = {
+"damage": 13,
+"draw": 3,
+"open_court": 2
+}
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_akuis"]
+script = ExtResource("1_al0g2")
+id = "hybrid_string_job"
+name = "Hybrid String Job"
+description = "Modifier - String. Equip a hybrid setup for the match. Serves and Net cards gain +5 pressure, and Control cards gain +4% accuracy. Exhaust."
+tags = PackedStringArray("modifier", "string", "tempo")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"control_accuracy_bonus": 0.04,
+"net_pressure_bonus": 5,
+"serve_pressure_bonus": 5
+},
+"string_type": "Hybrid"
+}
+upgrade_to = "hybrid_string_job_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_rttvg"]
+script = ExtResource("1_al0g2")
+id = "hybrid_string_job_plus"
+name = "Hybrid String Job+"
+description = "Modifier - String. Equip a hybrid setup for the match. Serves and Net cards gain +5 pressure, and Control cards gain +4% accuracy. Exhaust. Upgraded: better string tuning."
+tags = PackedStringArray("modifier", "string", "tempo")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"control_accuracy_bonus": 0.06,
+"net_pressure_bonus": 7,
+"serve_pressure_bonus": 7
+},
+"string_type": "Hybrid"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_lsve7"]
+script = ExtResource("1_al0g2")
+id = "inside_out_forehand"
+name = "Inside-Out Forehand"
+description = "Deal 9 damage. If the target has Spin, deal 4 more and open the court."
+tags = PackedStringArray("signature", "rally", "topspin")
+effects = {
+"bonus_vs_spin": 4,
+"damage": 9,
+"open_court": 1
+}
+upgrade_to = "inside_out_forehand_plus"
+category = "shot"
+shot_family = "Forehand"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_ebihs"]
+script = ExtResource("1_al0g2")
+id = "inside_out_forehand_plus"
+name = "Inside-Out Forehand+"
+description = "Deal 9 damage. If the target has Spin, deal 4 more and open the court. Upgraded: +3 pressure."
+tags = PackedStringArray("signature", "rally", "topspin")
+effects = {
+"bonus_vs_spin": 6,
+"damage": 12,
+"open_court": 2
+}
+category = "shot"
+shot_family = "Forehand"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_e86ds"]
+script = ExtResource("1_al0g2")
+id = "kevlar_coil"
+name = "Kevlar Coil"
+description = "Modifier - String. Gain 6 Guard, then equip kevlar for the match. Power shots gain +7 pressure but lose 4% accuracy. Exhaust."
+tags = PackedStringArray("modifier", "string", "power")
+effects = {
+"exhaust": true,
+"guard": 6,
+"string_modifiers": {
+"guard_bonus": 2,
+"power_accuracy_bonus": -0.04,
+"power_pressure_bonus": 7
+},
+"string_type": "Kevlar"
+}
+upgrade_to = "kevlar_coil_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_tcikv"]
+script = ExtResource("1_al0g2")
+id = "kevlar_coil_plus"
+name = "Kevlar Coil+"
+description = "Modifier - String. Gain 6 Guard, then equip kevlar for the match. Power shots gain +7 pressure but lose 4% accuracy. Exhaust. Upgraded: +3 guard, better string tuning."
+tags = PackedStringArray("modifier", "string", "power")
+effects = {
+"exhaust": true,
+"guard": 9,
+"string_modifiers": {
+"guard_bonus": 3,
+"power_accuracy_bonus": -0.02,
+"power_pressure_bonus": 9
+},
+"string_type": "Kevlar"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_ktfv5"]
+script = ExtResource("1_al0g2")
+id = "kick_serve"
+name = "Kick Serve"
+description = "Deal 8 damage. Can only open a point while serving. Gain 1 Momentum."
+tags = PackedStringArray("serve", "tempo")
+effects = {
+"damage": 8,
+"momentum": 1
+}
+upgrade_to = "kick_serve_plus"
+category = "shot"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact", "enhancer")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_jp3b0"]
+script = ExtResource("1_al0g2")
+id = "kick_serve_plus"
+name = "Kick Serve+"
+description = "Deal 8 damage. Can only open a point while serving. Gain 1 Momentum. Upgraded: +3 pressure."
+tags = PackedStringArray("serve", "tempo")
+effects = {
+"damage": 11,
+"momentum": 2
+}
+category = "shot"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact", "enhancer")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_ml04l"]
+script = ExtResource("1_al0g2")
+id = "late_whistle_debuff"
+name = "Late Whistle"
+cost = 99
+description = "Boss Debuff. The interruption breaks your rhythm. Unplayable. End turn: suffer 1 Pressure."
+tags = PackedStringArray("special", "boss_debuff")
+effects = {
+"pressure": 1
+}
+category = "debuff"
+shot_family = "Rally"
+slot_roles = PackedStringArray("modifier", "special")
+
+[sub_resource type="Resource" id="Resource_h58f0"]
+script = ExtResource("1_al0g2")
+id = "lead_tape_12"
+name = "Lead Tape (12 O'Clock)"
+description = "Modifier - Racquet Weight. Equip top-loaded lead tape for the match. Serves and Power shots gain +6 pressure, but lost points cost +2 extra Condition. Exhaust."
+tags = PackedStringArray("modifier", "racquet", "weight", "power")
+effects = {
+"exhaust": true,
+"racquet_modifiers": {
+"point_condition_penalty": 2,
+"power_pressure_bonus": 6,
+"serve_pressure_bonus": 6
+},
+"racquet_weight_type": "Lead Tape 12"
+}
+upgrade_to = "lead_tape_12_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_hwltu"]
+script = ExtResource("1_al0g2")
+id = "lead_tape_12_plus"
+name = "Lead Tape (12 O'Clock)+"
+description = "Modifier - Racquet Weight. Equip top-loaded lead tape for the match. Serves and Power shots gain +6 pressure, but lost points cost +2 extra Condition. Exhaust. Upgraded: stronger frame tuning."
+tags = PackedStringArray("modifier", "racquet", "weight", "power")
+effects = {
+"exhaust": true,
+"racquet_modifiers": {
+"point_condition_penalty": 1,
+"power_pressure_bonus": 8,
+"serve_pressure_bonus": 8
+},
+"racquet_weight_type": "Lead Tape 12"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_mnvlo"]
+script = ExtResource("1_al0g2")
+id = "lead_tape_3_9"
+name = "Lead Tape (3 and 9)"
+description = "Modifier - Racquet Weight. Gain 4 Guard, then equip side-balanced tape for the match. Control and Net shots gain +4 pressure, but lost points cost +1 extra Condition. Exhaust."
+tags = PackedStringArray("modifier", "racquet", "weight", "control")
+effects = {
+"exhaust": true,
+"guard": 4,
+"racquet_modifiers": {
+"control_pressure_bonus": 4,
+"guard_bonus": 1,
+"net_pressure_bonus": 4,
+"point_condition_penalty": 1
+},
+"racquet_weight_type": "Lead Tape 3 and 9"
+}
+upgrade_to = "lead_tape_3_9_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_eh0ew"]
+script = ExtResource("1_al0g2")
+id = "lead_tape_3_9_plus"
+name = "Lead Tape (3 and 9)+"
+description = "Modifier - Racquet Weight. Gain 4 Guard, then equip side-balanced tape for the match. Control and Net shots gain +4 pressure, but lost points cost +1 extra Condition. Exhaust. Upgraded: +3 guard, stronger frame tuning."
+tags = PackedStringArray("modifier", "racquet", "weight", "control")
+effects = {
+"exhaust": true,
+"guard": 7,
+"racquet_modifiers": {
+"control_pressure_bonus": 6,
+"guard_bonus": 2,
+"net_pressure_bonus": 6,
+"point_condition_penalty": 0
+},
+"racquet_weight_type": "Lead Tape 3 and 9"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_d7j6s"]
+script = ExtResource("1_al0g2")
+id = "lob_escape"
+name = "Lob Escape"
+description = "Gain 6 Guard and float a lob over the court. If you are under Pressure, draw 2 instead."
+tags = PackedStringArray("control", "recovery", "lob")
+effects = {
+"damage": 4,
+"draw_if_pressured": 2,
+"guard": 6
+}
+upgrade_to = "lob_escape_plus"
+category = "focus"
+shot_family = "Lob"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier")
+
+[sub_resource type="Resource" id="Resource_j8i5w"]
+script = ExtResource("1_al0g2")
+id = "lob_escape_plus"
+name = "Lob Escape+"
+description = "Gain 6 Guard and float a lob over the court. If you are under Pressure, draw 2 instead. Upgraded: +3 guard, +3 pressure, +1 draw."
+tags = PackedStringArray("control", "recovery", "lob")
+effects = {
+"damage": 7,
+"draw_if_pressured": 3,
+"guard": 9
+}
+category = "focus"
+shot_family = "Lob"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier")
+
+[sub_resource type="Resource" id="Resource_shk4s"]
+script = ExtResource("1_al0g2")
+id = "lobbed_return"
+name = "Lobbed Return"
+description = "Deal 4 damage, gain 5 Guard, and send a crowded attacker back with a lifted return."
+tags = PackedStringArray("return", "lob", "control", "recovery")
+effects = {
+"damage": 4,
+"guard": 5
+}
+upgrade_to = "lobbed_return_plus"
+category = "focus"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "enhancer", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_wcymk"]
+script = ExtResource("1_al0g2")
+id = "lobbed_return_plus"
+name = "Lobbed Return+"
+description = "Deal 4 damage, gain 5 Guard, and send a crowded attacker back with a lifted return. Upgraded: +3 pressure, +3 guard."
+tags = PackedStringArray("return", "lob", "control", "recovery")
+effects = {
+"damage": 7,
+"guard": 8
+}
+category = "focus"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "enhancer", "modifier")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_i20r8"]
+script = ExtResource("1_al0g2")
+id = "masterclass"
+name = "Masterclass"
+description = "Retain 1 extra card each turn. Gain 1 Focus."
+tags = PackedStringArray("power", "technique")
+effects = {
+"focus": 1,
+"retain_bonus": 1
+}
+upgrade_to = "masterclass_plus"
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_5fm0a"]
+script = ExtResource("1_al0g2")
+id = "masterclass_plus"
+name = "Masterclass+"
+description = "Retain 1 extra card each turn. Gain 1 Focus. Upgraded."
+tags = PackedStringArray("power", "technique")
+effects = {
+"focus": 2,
+"retain_bonus": 2
+}
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_e612i"]
+script = ExtResource("1_al0g2")
+id = "moonball_reset"
+name = "Moonball Reset"
+description = "Gain 10 Guard. Apply 1 Fatigue."
+tags = PackedStringArray("defense", "attrition")
+effects = {
+"fatigue": 1,
+"guard": 10
+}
+upgrade_to = "moonball_reset_plus"
+category = "utility"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer")
+
+[sub_resource type="Resource" id="Resource_ue7pj"]
+script = ExtResource("1_al0g2")
+id = "moonball_reset_plus"
+name = "Moonball Reset+"
+description = "Gain 10 Guard. Apply 1 Fatigue. Upgraded: +3 guard."
+tags = PackedStringArray("defense", "attrition")
+effects = {
+"fatigue": 1,
+"guard": 13
+}
+category = "utility"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer")
+
+[sub_resource type="Resource" id="Resource_m10p0"]
+script = ExtResource("1_al0g2")
+id = "multifilament_touch"
+name = "Multifilament Touch"
+description = "Modifier - String. Equip a multifilament bed for the match. Volleys and control shots gain +3 pressure, accuracy rises, and guard cards gain +1. Exhaust."
+tags = PackedStringArray("modifier", "string", "control", "volley")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"control_accuracy_bonus": 0.04,
+"guard_bonus": 1,
+"net_pressure_bonus": 3
+},
+"string_type": "Multifilament"
+}
+upgrade_to = "multifilament_touch_plus"
+category = "modifier"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_ktkw0"]
+script = ExtResource("1_al0g2")
+id = "multifilament_touch_plus"
+name = "Multifilament Touch+"
+description = "Modifier - String. Equip a multifilament bed for the match. Volleys and control shots gain +3 pressure, accuracy rises, and guard cards gain +1. Exhaust. Upgraded: better string tuning."
+tags = PackedStringArray("modifier", "string", "control", "volley")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"control_accuracy_bonus": 0.06,
+"guard_bonus": 2,
+"net_pressure_bonus": 5
+},
+"string_type": "Multifilament"
+}
+category = "modifier"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_rjksd"]
+script = ExtResource("1_al0g2")
+id = "natural_gut_lacing"
+name = "Natural Gut Lacing"
+description = "Modifier - String. Equip natural gut for the match. Your shots gain +6% accuracy and recovery effects heal +2 more. Exhaust."
+tags = PackedStringArray("modifier", "string", "recovery")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"control_accuracy_bonus": 0.04,
+"global_accuracy_bonus": 0.06,
+"heal_bonus": 2
+},
+"string_type": "Natural Gut"
+}
+upgrade_to = "natural_gut_lacing_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_it4c1"]
+script = ExtResource("1_al0g2")
+id = "natural_gut_lacing_plus"
+name = "Natural Gut Lacing+"
+description = "Modifier - String. Equip natural gut for the match. Your shots gain +6% accuracy and recovery effects heal +2 more. Exhaust. Upgraded: better string tuning."
+tags = PackedStringArray("modifier", "string", "recovery")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"control_accuracy_bonus": 0.06,
+"global_accuracy_bonus": 0.08,
+"heal_bonus": 3
+},
+"string_type": "Natural Gut"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_62ff0"]
+script = ExtResource("1_al0g2")
+id = "net_rush"
+name = "Net Rush"
+description = "Gain 6 Guard and deal 10 damage. Converts pressure best when you are forward."
+tags = PackedStringArray("net", "tempo", "volley")
+effects = {
+"damage": 10,
+"guard": 6
+}
+upgrade_to = "net_rush_plus"
+category = "shot"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "enhancer")
+
+[sub_resource type="Resource" id="Resource_i3am6"]
+script = ExtResource("1_al0g2")
+id = "net_rush_plus"
+name = "Net Rush+"
+description = "Gain 6 Guard and deal 10 damage. Converts pressure best when you are forward. Upgraded: +3 guard, +3 pressure."
+tags = PackedStringArray("net", "tempo", "volley")
+effects = {
+"damage": 13,
+"guard": 9
+}
+category = "shot"
+shot_family = "Volley"
+slot_roles = PackedStringArray("shot", "enhancer")
+
+[sub_resource type="Resource" id="Resource_h4kix"]
+script = ExtResource("1_al0g2")
+id = "overhead_smash"
+name = "Overhead Smash"
+cost = 2
+description = "Deal 12 damage. Crushes high balls and short lobs."
+tags = PackedStringArray("net", "power", "smash", "volley")
+effects = {
+"damage": 12
+}
+upgrade_to = "overhead_smash_plus"
+category = "shot"
+shot_family = "Overhead Smash"
+slot_roles = PackedStringArray("shot", "special")
+requires = {
+"attacker_position_in": PackedStringArray("ServiceLine", "Net")
+}
+
+[sub_resource type="Resource" id="Resource_e2u3u"]
+script = ExtResource("1_al0g2")
+id = "overhead_smash_plus"
+name = "Overhead Smash+"
+cost = 2
+description = "Deal 12 damage. Crushes high balls and short lobs. Upgraded: +3 pressure."
+tags = PackedStringArray("net", "power", "smash", "volley")
+effects = {
+"damage": 15
+}
+category = "shot"
+shot_family = "Overhead Smash"
+slot_roles = PackedStringArray("shot", "special")
+requires = {
+"attacker_position_in": PackedStringArray("ServiceLine", "Net")
+}
+
+[sub_resource type="Resource" id="Resource_pvk5o"]
+script = ExtResource("1_al0g2")
+id = "passing_bullet"
+name = "Passing Bullet"
+description = "Deal 11 damage. Deal 5 more against targets with Guard."
+tags = PackedStringArray("counter", "rally")
+effects = {
+"bonus_vs_guard": 5,
+"damage": 11
+}
+upgrade_to = "passing_bullet_plus"
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot")
+
+[sub_resource type="Resource" id="Resource_mpy3m"]
+script = ExtResource("1_al0g2")
+id = "passing_bullet_plus"
+name = "Passing Bullet+"
+description = "Deal 11 damage. Deal 5 more against targets with Guard. Upgraded: +3 pressure."
+tags = PackedStringArray("counter", "rally")
+effects = {
+"bonus_vs_guard": 7,
+"damage": 14
+}
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot")
+
+[sub_resource type="Resource" id="Resource_qd2bn"]
+script = ExtResource("1_al0g2")
+id = "polyester_bed"
+name = "Polyester Bed"
+description = "Modifier - String. Equip polyester for the match. Topspin and Slice shots gain +4 pressure and Spin applications gain +1. Exhaust."
+tags = PackedStringArray("modifier", "string", "control")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"extra_spin": 1,
+"slice_pressure_bonus": 4,
+"topspin_pressure_bonus": 4
+},
+"string_type": "Polyester"
+}
+upgrade_to = "polyester_bed_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_uvvum"]
+script = ExtResource("1_al0g2")
+id = "polyester_bed_plus"
+name = "Polyester Bed+"
+description = "Modifier - String. Equip polyester for the match. Topspin and Slice shots gain +4 pressure and Spin applications gain +1. Exhaust. Upgraded: better string tuning."
+tags = PackedStringArray("modifier", "string", "control")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"extra_spin": 2,
+"slice_pressure_bonus": 6,
+"topspin_pressure_bonus": 6
+},
+"string_type": "Polyester"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_bfr7s"]
+script = ExtResource("1_al0g2")
+id = "pro_stock_frame"
+name = "Pro Stock Frame"
+description = "Modifier - Racquet Weight. Equip a heavy pro frame for the match. Power shots gain +9 pressure and Serves gain +4, but lost points cost +4 extra Condition and long rallies add Fatigue. Exhaust."
+tags = PackedStringArray("modifier", "racquet", "weight", "power")
+effects = {
+"exhaust": true,
+"racquet_modifiers": {
+"long_rally_fatigue": 1,
+"point_condition_penalty": 4,
+"power_pressure_bonus": 9,
+"serve_pressure_bonus": 4
+},
+"racquet_weight_type": "Pro Stock"
+}
+upgrade_to = "pro_stock_frame_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_xy3ns"]
+script = ExtResource("1_al0g2")
+id = "pro_stock_frame_plus"
+name = "Pro Stock Frame+"
+description = "Modifier - Racquet Weight. Equip a heavy pro frame for the match. Power shots gain +9 pressure and Serves gain +4, but lost points cost +4 extra Condition and long rallies add Fatigue. Exhaust. Upgraded: stronger frame tuning."
+tags = PackedStringArray("modifier", "racquet", "weight", "power")
+effects = {
+"exhaust": true,
+"racquet_modifiers": {
+"long_rally_fatigue": 2,
+"point_condition_penalty": 3,
+"power_pressure_bonus": 11,
+"serve_pressure_bonus": 6
+},
+"racquet_weight_type": "Pro Stock"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_cn2as"]
+script = ExtResource("1_al0g2")
+id = "recover_breath"
+name = "Recover Breath"
+description = "Gain 7 Guard and recover 1 Stamina next turn."
+tags = PackedStringArray("recovery", "skill")
+effects = {
+"guard": 7,
+"next_turn_stamina": 1
+}
+upgrade_to = "recover_breath_plus"
+category = "focus"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer")
+
+[sub_resource type="Resource" id="Resource_g17ya"]
+script = ExtResource("1_al0g2")
+id = "recover_breath_plus"
+name = "Recover Breath+"
+description = "Gain 7 Guard and recover 1 Stamina next turn. Upgraded: +3 guard."
+tags = PackedStringArray("recovery", "skill")
+effects = {
+"guard": 10,
+"next_turn_stamina": 2
+}
+category = "focus"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer")
+
+[sub_resource type="Resource" id="Resource_cif11"]
+script = ExtResource("1_al0g2")
+id = "relentless_return"
+name = "Relentless Return"
+description = "Deal 4 damage twice. Apply 1 Pressure on the second hit."
+tags = PackedStringArray("attrition", "rally")
+effects = {
+"multi_hit": PackedInt32Array(4, 4),
+"pressure": 1
+}
+upgrade_to = "relentless_return_plus"
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier")
+
+[sub_resource type="Resource" id="Resource_cd67d"]
+script = ExtResource("1_al0g2")
+id = "relentless_return_plus"
+name = "Relentless Return+"
+description = "Deal 4 damage twice. Apply 1 Pressure on the second hit. Upgraded."
+tags = PackedStringArray("attrition", "rally")
+effects = {
+"multi_hit": PackedInt32Array(5, 5),
+"pressure": 2
+}
+category = "shot"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier")
+
+[sub_resource type="Resource" id="Resource_dna64"]
+script = ExtResource("1_al0g2")
+id = "return_rip"
+name = "Return Rip"
+description = "Deal 9 damage. Best used to drive through a serve before the server settles."
+tags = PackedStringArray("return", "power", "down_the_line")
+effects = {
+"damage": 9
+}
+upgrade_to = "return_rip_plus"
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier", "special")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_o63xa"]
+script = ExtResource("1_al0g2")
+id = "return_rip_plus"
+name = "Return Rip+"
+description = "Deal 9 damage. Best used to drive through a serve before the server settles. Upgraded: +3 pressure."
+tags = PackedStringArray("return", "power", "down_the_line")
+effects = {
+"damage": 12
+}
+category = "shot"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "modifier", "special")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_1vwxs"]
+script = ExtResource("1_al0g2")
+id = "second_wind"
+name = "Second Wind"
+description = "Heal 5. Exhaust."
+tags = PackedStringArray("recovery", "power")
+effects = {
+"exhaust": true,
+"heal": 5
+}
+upgrade_to = "second_wind_plus"
+category = "focus"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_2vu8w"]
+script = ExtResource("1_al0g2")
+id = "second_wind_plus"
+name = "Second Wind+"
+description = "Heal 5. Exhaust. Upgraded: +2 heal."
+tags = PackedStringArray("recovery", "power")
+effects = {
+"exhaust": true,
+"heal": 7
+}
+category = "focus"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "special")
+
+[sub_resource type="Resource" id="Resource_8y1be"]
+script = ExtResource("1_al0g2")
+id = "short_hop_pickup"
+name = "Short-Hop Pickup"
+cost = 0
+description = "Deal 3 damage and gain 5 Guard. On a return point, gain 1 Focus for the rally."
+tags = PackedStringArray("return", "footwork", "control")
+effects = {
+"damage": 3,
+"focus_if_returning": 1,
+"guard": 5
+}
+upgrade_to = "short_hop_pickup_plus"
+category = "footwork"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "enhancer")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_jarfk"]
+script = ExtResource("1_al0g2")
+id = "short_hop_pickup_plus"
+name = "Short-Hop Pickup+"
+cost = 0
+description = "Deal 3 damage and gain 5 Guard. On a return point, gain 1 Focus for the rally. Upgraded: +3 pressure, +3 guard."
+tags = PackedStringArray("return", "footwork", "control")
+effects = {
+"damage": 6,
+"focus_if_returning": 1,
+"guard": 8
+}
+category = "footwork"
+shot_family = "Return"
+slot_roles = PackedStringArray("initial_contact", "enhancer")
+requires = {
+"must_be_receiver": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_x6abq"]
+script = ExtResource("1_al0g2")
+id = "slice_drag"
+name = "Slice Drag"
+description = "Deal 5 damage with a skidding slice. Apply 2 Pressure."
+tags = PackedStringArray("slice", "control")
+effects = {
+"damage": 5,
+"pressure": 2
+}
+upgrade_to = "slice_drag_plus"
+category = "shot"
+shot_family = "Slice"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_hel2b"]
+script = ExtResource("1_al0g2")
+id = "slice_drag_plus"
+name = "Slice Drag+"
+description = "Deal 5 damage with a skidding slice. Apply 2 Pressure. Upgraded: +3 pressure."
+tags = PackedStringArray("slice", "control")
+effects = {
+"damage": 8,
+"pressure": 3
+}
+category = "shot"
+shot_family = "Slice"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_x5jec"]
+script = ExtResource("1_al0g2")
+id = "split_step"
+name = "Split Step"
+description = "Gain 8 Guard. Draw 1."
+tags = PackedStringArray("footwork", "skill")
+effects = {
+"draw": 1,
+"guard": 8
+}
+upgrade_to = "split_step_plus"
+category = "footwork"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer")
+
+[sub_resource type="Resource" id="Resource_br7b4"]
+script = ExtResource("1_al0g2")
+id = "split_step_plus"
+name = "Split Step+"
+description = "Gain 8 Guard. Draw 1. Upgraded: +3 guard, +1 draw."
+tags = PackedStringArray("footwork", "skill")
+effects = {
+"draw": 2,
+"guard": 11
+}
+category = "footwork"
+shot_family = "Rally"
+slot_roles = PackedStringArray("enhancer")
+
+[sub_resource type="Resource" id="Resource_iiury"]
+script = ExtResource("1_al0g2")
+id = "steady_serve"
+name = "Steady Serve"
+description = "Deal 7 damage. Can only open a point while serving."
+tags = PackedStringArray("serve", "basic")
+effects = {
+"damage": 7
+}
+upgrade_to = "steady_serve_plus"
+category = "shot"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_575ym"]
+script = ExtResource("1_al0g2")
+id = "steady_serve_plus"
+name = "Steady Serve+"
+description = "Deal 7 damage. Can only open a point while serving. Upgraded: +3 pressure."
+tags = PackedStringArray("serve", "basic")
+effects = {
+"damage": 10
+}
+category = "shot"
+shot_family = "Serve"
+slot_roles = PackedStringArray("initial_contact")
+requires = {
+"max_uses_per_turn": 1,
+"must_be_server": true,
+"point_open_only": true
+}
+
+[sub_resource type="Resource" id="Resource_v206m"]
+script = ExtResource("1_al0g2")
+id = "synthetic_gut_setup"
+name = "Synthetic Gut Setup"
+description = "Modifier - String. Equip synthetic gut for the match. Serves and slice exchanges gain +2 pressure with a small global accuracy bump. Exhaust."
+tags = PackedStringArray("modifier", "string", "tempo", "control")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"global_accuracy_bonus": 0.03,
+"serve_pressure_bonus": 2,
+"slice_pressure_bonus": 2
+},
+"string_type": "Synthetic Gut"
+}
+upgrade_to = "synthetic_gut_setup_plus"
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_cqom3"]
+script = ExtResource("1_al0g2")
+id = "synthetic_gut_setup_plus"
+name = "Synthetic Gut Setup+"
+description = "Modifier - String. Equip synthetic gut for the match. Serves and slice exchanges gain +2 pressure with a small global accuracy bump. Exhaust. Upgraded: better string tuning."
+tags = PackedStringArray("modifier", "string", "tempo", "control")
+effects = {
+"exhaust": true,
+"string_modifiers": {
+"global_accuracy_bonus": 0.05,
+"serve_pressure_bonus": 4,
+"slice_pressure_bonus": 4
+},
+"string_type": "Synthetic Gut"
+}
+category = "modifier"
+shot_family = "Rally"
+slot_roles = PackedStringArray("shot", "enhancer", "modifier", "special")
+
+[sub_resource type="Resource" id="Resource_lorh0"]
+script = ExtResource("1_al0g2")
+id = "tight_strings_debuff"
+name = "Tight Strings"
+cost = 99
+description = "Boss Debuff. The pressure tightens your contact window. Unplayable. End turn: gain 1 Fatigue and 1 Open Court."
+tags = PackedStringArray("special", "boss_debuff")
+effects = {
+"fatigue": 1,
+"open_court": 1
+}
+category = "debuff"
+shot_family = "Rally"
+slot_roles = PackedStringArray("modifier", "special")
+
+[sub_resource type="Resource" id="Resource_n68o2"]
+script = ExtResource("1_al0g2")
+id = "topspin_drive"
+name = "Topspin Drive"
+description = "Deal 8 damage. Apply 2 Spin."
+tags = PackedStringArray("rally", "topspin")
+effects = {
+"damage": 8,
+"spin": 2
+}
+upgrade_to = "topspin_drive_plus"
+category = "shot"
+shot_family = "Topspin"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[sub_resource type="Resource" id="Resource_fmtnx"]
+script = ExtResource("1_al0g2")
+id = "topspin_drive_plus"
+name = "Topspin Drive+"
+description = "Deal 8 damage. Apply 2 Spin. Upgraded: +3 pressure."
+tags = PackedStringArray("rally", "topspin")
+effects = {
+"damage": 11,
+"spin": 3
+}
+category = "shot"
+shot_family = "Topspin"
+slot_roles = PackedStringArray("shot", "modifier")
+
+[resource]
+script = ExtResource("2_1udgk")
+cards = [SubResource("Resource_al0g2"), SubResource("Resource_1udgk"), SubResource("Resource_ghmn2"), SubResource("Resource_53v84"), SubResource("Resource_fvu6g"), SubResource("Resource_4mtfa"), SubResource("Resource_c78kr"), SubResource("Resource_kcviq"), SubResource("Resource_a4x70"), SubResource("Resource_akpx7"), SubResource("Resource_5l42k"), SubResource("Resource_wpm8n"), SubResource("Resource_0q83v"), SubResource("Resource_al4m3"), SubResource("Resource_t7ftd"), SubResource("Resource_8qg6c"), SubResource("Resource_jphj7"), SubResource("Resource_qfhax"), SubResource("Resource_e3uox"), SubResource("Resource_oifku"), SubResource("Resource_0n06d"), SubResource("Resource_yvdow"), SubResource("Resource_uw2a5"), SubResource("Resource_lqvok"), SubResource("Resource_ysatw"), SubResource("Resource_4vmrf"), SubResource("Resource_1d5wn"), SubResource("Resource_r2rkp"), SubResource("Resource_yoqcb"), SubResource("Resource_e8col"), SubResource("Resource_i1kud"), SubResource("Resource_kpk33"), SubResource("Resource_y1isp"), SubResource("Resource_2fk43"), SubResource("Resource_aitot"), SubResource("Resource_1qji8"), SubResource("Resource_iqj3f"), SubResource("Resource_akuis"), SubResource("Resource_rttvg"), SubResource("Resource_lsve7"), SubResource("Resource_ebihs"), SubResource("Resource_e86ds"), SubResource("Resource_tcikv"), SubResource("Resource_ktfv5"), SubResource("Resource_jp3b0"), SubResource("Resource_ml04l"), SubResource("Resource_h58f0"), SubResource("Resource_hwltu"), SubResource("Resource_mnvlo"), SubResource("Resource_eh0ew"), SubResource("Resource_d7j6s"), SubResource("Resource_j8i5w"), SubResource("Resource_shk4s"), SubResource("Resource_wcymk"), SubResource("Resource_i20r8"), SubResource("Resource_5fm0a"), SubResource("Resource_e612i"), SubResource("Resource_ue7pj"), SubResource("Resource_m10p0"), SubResource("Resource_ktkw0"), SubResource("Resource_rjksd"), SubResource("Resource_it4c1"), SubResource("Resource_62ff0"), SubResource("Resource_i3am6"), SubResource("Resource_h4kix"), SubResource("Resource_e2u3u"), SubResource("Resource_pvk5o"), SubResource("Resource_mpy3m"), SubResource("Resource_qd2bn"), SubResource("Resource_uvvum"), SubResource("Resource_bfr7s"), SubResource("Resource_xy3ns"), SubResource("Resource_cn2as"), SubResource("Resource_g17ya"), SubResource("Resource_cif11"), SubResource("Resource_cd67d"), SubResource("Resource_dna64"), SubResource("Resource_o63xa"), SubResource("Resource_1vwxs"), SubResource("Resource_2vu8w"), SubResource("Resource_8y1be"), SubResource("Resource_jarfk"), SubResource("Resource_x6abq"), SubResource("Resource_hel2b"), SubResource("Resource_x5jec"), SubResource("Resource_br7b4"), SubResource("Resource_iiury"), SubResource("Resource_575ym"), SubResource("Resource_v206m"), SubResource("Resource_cqom3"), SubResource("Resource_lorh0"), SubResource("Resource_n68o2"), SubResource("Resource_fmtnx")]

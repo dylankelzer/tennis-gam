@@ -1,0 +1,1249 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/ui/map_view.gd" id="2_map"]
+[ext_resource type="Script" path="res://scripts/ui/tennis_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/badge_icon.gd" id="4_badge"]
+[ext_resource type="Script" path="res://scripts/ui/combat_arena_view.gd" id="5_arena"]
+[ext_resource type="Script" path="res://scripts/ui/portrait_tile.gd" id="6_portrait"]
+[ext_resource type="Script" path="res://scripts/ui/tennis_meter.gd" id="7_meter"]
+[ext_resource type="Script" path="res://scripts/ui/rest_checkpoint_view.gd" id="8_rest"]
+[ext_resource type="PackedScene" path="res://scenes/components/UnitView.tscn" id="9_unit_view"]
+[ext_resource type="Script" path="res://scripts/ui/fx_root.gd" id="10_fx_root"]
+[ext_resource type="Script" path="res://scripts/ui/theme_manager.gd" id="11_theme_manager"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="ThemeManager" type="Node" parent="."]
+script = ExtResource("11_theme_manager")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+script = ExtResource("3_backdrop")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 28.0
+offset_right = -28.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="VBoxContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="MarginContainer/VBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "Court of Chaos"
+
+[node name="Subtitle" type="Label" parent="MarginContainer/VBox/Header"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="AtmospherePanel" type="PanelContainer" parent="MarginContainer/VBox/Header"]
+layout_mode = 2
+
+[node name="AtmosphereMargin" type="MarginContainer" parent="MarginContainer/VBox/Header/AtmospherePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="AtmosphereLabel" type="Label" parent="MarginContainer/VBox/Header/AtmospherePanel/AtmosphereMargin"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="LandingCenter" type="CenterContainer" parent="MarginContainer/VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LandingPanel" type="PanelContainer" parent="MarginContainer/VBox/LandingCenter"]
+layout_mode = 2
+
+[node name="LandingMargin" type="MarginContainer" parent="MarginContainer/VBox/LandingCenter/LandingPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="LandingVBox" type="VBoxContainer" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LandingIcons" type="HBoxContainer" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin/LandingVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 18
+
+[node name="LandingBall" type="Control" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin/LandingVBox/LandingIcons"]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+script = ExtResource("4_badge")
+icon_kind = "ball"
+
+[node name="LandingRacquet" type="Control" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin/LandingVBox/LandingIcons"]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+script = ExtResource("4_badge")
+icon_kind = "racquet"
+
+[node name="LandingTrophy" type="Control" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin/LandingVBox/LandingIcons"]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+script = ExtResource("4_badge")
+icon_kind = "trophy"
+
+[node name="LandingPortrait" type="Control" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin/LandingVBox"]
+custom_minimum_size = Vector2(240, 240)
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("6_portrait")
+
+[node name="LandingStartButton" type="Button" parent="MarginContainer/VBox/LandingCenter/LandingPanel/LandingMargin/LandingVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 68)
+text = "Start Run"
+
+[node name="RevealPanel" type="PanelContainer" parent="MarginContainer/VBox"]
+visible = false
+layout_mode = 2
+
+[node name="RevealMargin" type="MarginContainer" parent="MarginContainer/VBox/RevealPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="RevealVBox" type="VBoxContainer" parent="MarginContainer/VBox/RevealPanel/RevealMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RevealTitle" type="Label" parent="MarginContainer/VBox/RevealPanel/RevealMargin/RevealVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Tournament Reveal"
+
+[node name="RevealBody" type="Label" parent="MarginContainer/VBox/RevealPanel/RevealMargin/RevealVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="RevealActions" type="HBoxContainer" parent="MarginContainer/VBox/RevealPanel/RevealMargin/RevealVBox"]
+layout_mode = 2
+alignment = 2
+
+[node name="RevealProceedButton" type="Button" parent="MarginContainer/VBox/RevealPanel/RevealMargin/RevealVBox/RevealActions"]
+visible = false
+layout_mode = 2
+text = "Begin Opening Round"
+
+[node name="DismissRevealButton" type="Button" parent="MarginContainer/VBox/RevealPanel/RevealMargin/RevealVBox/RevealActions"]
+layout_mode = 2
+text = "Close Reveal"
+
+[node name="ActionCalloutPanel" type="PanelContainer" parent="MarginContainer/VBox"]
+visible = false
+layout_mode = 2
+
+[node name="ActionCalloutMargin" type="MarginContainer" parent="MarginContainer/VBox/ActionCalloutPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="ActionCalloutRow" type="HBoxContainer" parent="MarginContainer/VBox/ActionCalloutPanel/ActionCalloutMargin"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="ActionCalloutIcon" type="Control" parent="MarginContainer/VBox/ActionCalloutPanel/ActionCalloutMargin/ActionCalloutRow"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+script = ExtResource("4_badge")
+icon_kind = "ball"
+
+[node name="ActionCalloutLabel" type="Label" parent="MarginContainer/VBox/ActionCalloutPanel/ActionCalloutMargin/ActionCalloutRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Next action"
+
+[node name="PrimaryActionButton" type="Button" parent="MarginContainer/VBox/ActionCalloutPanel/ActionCalloutMargin/ActionCalloutRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(230, 44)
+text = "Play Next Match"
+
+[node name="CombatStagePanel" type="PanelContainer" parent="MarginContainer/VBox"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CombatStageMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="CombatStageVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="StageTopRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StagePlayerHud" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StagePlayerHudMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StagePlayerHud"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="StagePlayerHudVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StagePlayerHud/StagePlayerHudMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StagePlayerPortrait" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StagePlayerHud/StagePlayerHudMargin/StagePlayerHudVBox"]
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+script = ExtResource("6_portrait")
+
+[node name="StagePlayerTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StagePlayerHud/StagePlayerHudMargin/StagePlayerHudVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Player"
+
+[node name="StagePlayerHudBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StagePlayerHud/StagePlayerHudMargin/StagePlayerHudVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="StageScoreHud" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageScoreHudMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="StageScoreHudVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StageMajorLabel" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 16
+text = "Australian Open"
+
+[node name="StageServeStatePanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="StageServeStateMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox/StageServeStatePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 4
+
+[node name="StageServeStateLabel" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox/StageServeStatePanel/StageServeStateMargin"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+text = "SERVE WINDOW"
+
+[node name="StageScoreLabel" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "15 - 0"
+
+[node name="StageMetaLabel" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="StagePressureMeter" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageScoreHud/StageScoreHudMargin/StageScoreHudVBox"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+script = ExtResource("7_meter")
+
+[node name="StageEnemyHud" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageEnemyHudMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageEnemyHud"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="StageEnemyHudVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageEnemyHud/StageEnemyHudMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StageEnemyPortrait" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageEnemyHud/StageEnemyHudMargin/StageEnemyHudVBox"]
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+script = ExtResource("6_portrait")
+
+[node name="StageEnemyTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageEnemyHud/StageEnemyHudMargin/StageEnemyHudVBox"]
+layout_mode = 2
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 18
+text = "Opponent"
+
+[node name="StageEnemyHudBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageTopRow/StageEnemyHud/StageEnemyHudMargin/StageEnemyHudVBox"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 2
+text = ""
+
+[node name="StageEquipmentRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StageStringBadgePanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageStringBadgeMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageStringBadgePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StageStringBadgeVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageStringBadgePanel/StageStringBadgeMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StageStringBadgeTag" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageStringBadgePanel/StageStringBadgeMargin/StageStringBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "STRING"
+
+[node name="StageStringBadgeName" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageStringBadgePanel/StageStringBadgeMargin/StageStringBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Factory Bed"
+
+[node name="StageStringBadgeInfo" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageStringBadgePanel/StageStringBadgeMargin/StageStringBadgeVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "No string modifier equipped"
+
+[node name="StageRacquetBadgePanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageRacquetBadgeMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageRacquetBadgePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StageRacquetBadgeVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageRacquetBadgePanel/StageRacquetBadgeMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StageRacquetBadgeTag" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageRacquetBadgePanel/StageRacquetBadgeMargin/StageRacquetBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "FRAME"
+
+[node name="StageRacquetBadgeName" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageRacquetBadgePanel/StageRacquetBadgeMargin/StageRacquetBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Stock Frame"
+
+[node name="StageRacquetBadgeInfo" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageEquipmentRow/StageRacquetBadgePanel/StageRacquetBadgeMargin/StageRacquetBadgeVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "No racquet modifier equipped"
+
+[node name="StageArenaPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StageArenaMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="StageArenaRoot" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin"]
+custom_minimum_size = Vector2(0, 370)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StageArenaView" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_arena")
+
+[node name="StagePlayerUnitView" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot" instance=ExtResource("9_unit_view")]
+
+[node name="StageEnemyUnitView" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot" instance=ExtResource("9_unit_view")]
+
+[node name="StageFXRoot" type="Node2D" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot"]
+script = ExtResource("10_fx_root")
+
+[node name="StageArenaOverlay" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="StageArenaVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="StageArenaTopRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StageFlowPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow"]
+custom_minimum_size = Vector2(210, 0)
+layout_mode = 2
+
+[node name="StageFlowMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageFlowPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StageFlowVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageFlowPanel/StageFlowMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StageFlowTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageFlowPanel/StageFlowMargin/StageFlowVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Point"
+
+[node name="StageFlowBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageFlowPanel/StageFlowMargin/StageFlowVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="StageArenaTopSpacer" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageRallyPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow"]
+custom_minimum_size = Vector2(228, 0)
+layout_mode = 2
+
+[node name="StageRallyMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageRallyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StageRallyVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageRallyPanel/StageRallyMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StageRallyTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageRallyPanel/StageRallyMargin/StageRallyVBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+text = "Score"
+
+[node name="StageRallyBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageRallyPanel/StageRallyMargin/StageRallyVBox"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="StageArenaTopSpacer2" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageIntentPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+
+[node name="StageIntentMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageIntentPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StageIntentVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageIntentPanel/StageIntentMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StageIntentTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageIntentPanel/StageIntentMargin/StageIntentVBox"]
+layout_mode = 2
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 14
+text = "Intent"
+
+[node name="StageIntentBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaTopRow/StageIntentPanel/StageIntentMargin/StageIntentVBox"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 2
+text = ""
+
+[node name="StageArenaSpacer" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StageArenaBottomRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StagePlayerPod" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow"]
+custom_minimum_size = Vector2(236, 0)
+layout_mode = 2
+
+[node name="StagePlayerPodMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StagePlayerPod"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StagePlayerPodVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StagePlayerPod/StagePlayerPodMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StagePlayerPodTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StagePlayerPod/StagePlayerPodMargin/StagePlayerPodVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "You"
+
+[node name="StagePlayerStatusRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StagePlayerPod/StagePlayerPodMargin/StagePlayerPodVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StagePlayerPodBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StagePlayerPod/StagePlayerPodMargin/StagePlayerPodVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="StageArenaBottomSpacer" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageEnemyPod" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow"]
+custom_minimum_size = Vector2(236, 0)
+layout_mode = 2
+
+[node name="StageEnemyPodMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StageEnemyPod"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StageEnemyPodVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StageEnemyPod/StageEnemyPodMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StageEnemyPodTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StageEnemyPod/StageEnemyPodMargin/StageEnemyPodVBox"]
+layout_mode = 2
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 16
+text = "Opponent"
+
+[node name="StageEnemyStatusRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StageEnemyPod/StageEnemyPodMargin/StageEnemyPodVBox"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 6
+
+[node name="StageEnemyPodBody" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageArenaPanel/StageArenaMargin/StageArenaRoot/StageArenaOverlay/StageArenaVBox/StageArenaBottomRow/StageEnemyPod/StageEnemyPodMargin/StageEnemyPodVBox"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 2
+text = ""
+
+[node name="StageFooterRow" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StageStaminaPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow"]
+custom_minimum_size = Vector2(156, 0)
+layout_mode = 2
+
+[node name="StageStaminaMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageStaminaPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="StageStaminaVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageStaminaPanel/StageStaminaMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StageStaminaTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageStaminaPanel/StageStaminaMargin/StageStaminaVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Stamina"
+
+[node name="StageStaminaValue" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageStaminaPanel/StageStaminaMargin/StageStaminaVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "3 / 3"
+
+[node name="StageStaminaMeter" type="Control" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageStaminaPanel/StageStaminaMargin/StageStaminaVBox"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+script = ExtResource("7_meter")
+
+[node name="StageStaminaHint" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageStaminaPanel/StageStaminaMargin/StageStaminaVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="StageHandPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageHandMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageHandPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="StageHandVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageHandPanel/StageHandMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StageHandTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageHandPanel/StageHandMargin/StageHandVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Shot Cards"
+
+[node name="StageHandScroll" type="ScrollContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageHandPanel/StageHandMargin/StageHandVBox"]
+custom_minimum_size = Vector2(0, 236)
+layout_mode = 2
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+size_flags_horizontal = 3
+
+[node name="StageHandButtons" type="HBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageHandPanel/StageHandMargin/StageHandVBox/StageHandScroll"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StageActionPanel" type="PanelContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+
+[node name="StageActionMargin" type="MarginContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="StageActionVBox" type="VBoxContainer" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel/StageActionMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StageTurnTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel/StageActionMargin/StageActionVBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+text = "Controls"
+
+[node name="StageEndTurnButton" type="Button" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel/StageActionMargin/StageActionVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 64)
+text = "End Turn"
+
+[node name="StageTurnHint" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel/StageActionMargin/StageActionVBox"]
+layout_mode = 2
+autowrap_mode = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="StageEventFeedTitle" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel/StageActionMargin/StageActionVBox"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+text = "Recent Rally"
+
+[node name="StageEventFeed" type="Label" parent="MarginContainer/VBox/CombatStagePanel/CombatStageMargin/CombatStageVBox/StageFooterRow/StageActionPanel/StageActionMargin/StageActionVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+autowrap_mode = 3
+text = ""
+
+[node name="RestCheckpointPanel" type="PanelContainer" parent="MarginContainer/VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RestCheckpointMargin" type="MarginContainer" parent="MarginContainer/VBox/RestCheckpointPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="RestCheckpointVBox" type="VBoxContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+
+[node name="RestTopRow" type="HBoxContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RestPromptPanel" type="PanelContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RestPromptMargin" type="MarginContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestPromptPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="RestPromptVBox" type="VBoxContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestPromptPanel/RestPromptMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RestEyebrow" type="Label" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestPromptPanel/RestPromptMargin/RestPromptVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Recovery Camp"
+
+[node name="RestQuestion" type="Label" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestPromptPanel/RestPromptMargin/RestPromptVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "What should the team do?"
+
+[node name="RestSummary" type="Label" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestPromptPanel/RestPromptMargin/RestPromptVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="RestLedgerPanel" type="PanelContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="RestLedgerMargin" type="MarginContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestLedgerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="RestLedgerVBox" type="VBoxContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestLedgerPanel/RestLedgerMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RestLedgerTitle" type="Label" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestLedgerPanel/RestLedgerMargin/RestLedgerVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Checkpoint Ledger"
+
+[node name="RestLedgerBody" type="Label" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestTopRow/RestLedgerPanel/RestLedgerMargin/RestLedgerVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="RestChoiceRow" type="HBoxContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="RestScenePanel" type="PanelContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RestSceneMargin" type="MarginContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestScenePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RestSceneRoot" type="Control" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestScenePanel/RestSceneMargin"]
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RestSceneView" type="Control" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestScenePanel/RestSceneMargin/RestSceneRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_rest")
+
+[node name="RestBottomRow" type="HBoxContainer" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RestHint" type="Label" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestBottomRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 3
+text = "Choose one camp action, then return to the bracket."
+
+[node name="RestLeaveButton" type="Button" parent="MarginContainer/VBox/RestCheckpointPanel/RestCheckpointMargin/RestCheckpointVBox/RestBottomRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(210, 50)
+text = "Leave Camp"
+
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ClassControls" type="VBoxContainer" parent="MarginContainer/VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ClassHeader" type="Label" parent="MarginContainer/VBox/TopBar/ClassControls"]
+layout_mode = 2
+text = "Class Select"
+
+[node name="ClassPortrait" type="Control" parent="MarginContainer/VBox/TopBar/ClassControls"]
+custom_minimum_size = Vector2(180, 180)
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("6_portrait")
+
+[node name="ClassNav" type="HBoxContainer" parent="MarginContainer/VBox/TopBar/ClassControls"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PrevClassButton" type="Button" parent="MarginContainer/VBox/TopBar/ClassControls/ClassNav"]
+layout_mode = 2
+text = "Previous"
+
+[node name="ClassName" type="Label" parent="MarginContainer/VBox/TopBar/ClassControls/ClassNav"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = "Novice"
+
+[node name="NextClassButton" type="Button" parent="MarginContainer/VBox/TopBar/ClassControls/ClassNav"]
+layout_mode = 2
+text = "Next"
+
+[node name="ActionRow" type="HBoxContainer" parent="MarginContainer/VBox/TopBar/ClassControls"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StartRunButton" type="Button" parent="MarginContainer/VBox/TopBar/ClassControls/ActionRow"]
+layout_mode = 2
+text = "Start Run"
+
+[node name="ContinueRunButton" type="Button" parent="MarginContainer/VBox/TopBar/ClassControls/ActionRow"]
+layout_mode = 2
+text = "Continue Run"
+
+[node name="ResetRunButton" type="Button" parent="MarginContainer/VBox/TopBar/ClassControls/ActionRow"]
+layout_mode = 2
+text = "Abandon Run"
+
+[node name="RunStatusPanel" type="PanelContainer" parent="MarginContainer/VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RunStatusMargin" type="MarginContainer" parent="MarginContainer/VBox/TopBar/RunStatusPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="RunStatus" type="Label" parent="MarginContainer/VBox/TopBar/RunStatusPanel/RunStatusMargin"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="Body" type="HSplitContainer" parent="MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 720
+
+[node name="LeftColumn" type="VBoxContainer" parent="MarginContainer/VBox/Body"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="ClassPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/LeftColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ClassMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/LeftColumn/ClassPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ClassView" type="RichTextLabel" parent="MarginContainer/VBox/Body/LeftColumn/ClassPanel/ClassMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+fit_content = false
+scroll_active = true
+bbcode_enabled = false
+autowrap_mode = 3
+text = ""
+
+[node name="MapPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/LeftColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MapMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/LeftColumn/MapPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="MapVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/LeftColumn/MapPanel/MapMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="MapTitle" type="Label" parent="MarginContainer/VBox/Body/LeftColumn/MapPanel/MapMargin/MapVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Tournament Map"
+
+[node name="MapView" type="Control" parent="MarginContainer/VBox/Body/LeftColumn/MapPanel/MapMargin/MapVBox"]
+custom_minimum_size = Vector2(480, 460)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_map")
+
+[node name="NodeInfo" type="Label" parent="MarginContainer/VBox/Body/LeftColumn/MapPanel/MapMargin/MapVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="RightColumn" type="VBoxContainer" parent="MarginContainer/VBox/Body"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="CombatPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CombatMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="CombatVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="CombatHeader" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Court Overview"
+
+[node name="MatchSummary" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="LaunchPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+visible = false
+layout_mode = 2
+
+[node name="LaunchMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="LaunchVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel/LaunchMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LaunchTitle" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel/LaunchMargin/LaunchVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Ready for the Next Tournament"
+
+[node name="LaunchBody" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel/LaunchMargin/LaunchVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Pick a class, then start a run or continue from the last checkpoint."
+
+[node name="LaunchActions" type="HBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel/LaunchMargin/LaunchVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LaunchStartButton" type="Button" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel/LaunchMargin/LaunchVBox/LaunchActions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 46)
+text = "Start Run"
+
+[node name="LaunchContinueButton" type="Button" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/LaunchPanel/LaunchMargin/LaunchVBox/LaunchActions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 46)
+text = "Continue Run"
+
+[node name="EquipmentRow" type="HBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StringBadgePanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StringBadgeMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/StringBadgePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="StringBadgeVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/StringBadgePanel/StringBadgeMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StringBadgeTag" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/StringBadgePanel/StringBadgeMargin/StringBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "STRING"
+
+[node name="StringBadgeName" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/StringBadgePanel/StringBadgeMargin/StringBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Factory Bed"
+
+[node name="StringBadgeInfo" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/StringBadgePanel/StringBadgeMargin/StringBadgeVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "No string modifier equipped"
+
+[node name="RacquetBadgePanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RacquetBadgeMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/RacquetBadgePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="RacquetBadgeVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/RacquetBadgePanel/RacquetBadgeMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="RacquetBadgeTag" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/RacquetBadgePanel/RacquetBadgeMargin/RacquetBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "FRAME"
+
+[node name="RacquetBadgeName" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/RacquetBadgePanel/RacquetBadgeMargin/RacquetBadgeVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Stock Frame"
+
+[node name="RacquetBadgeInfo" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/EquipmentRow/RacquetBadgePanel/RacquetBadgeMargin/RacquetBadgeVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "No racquet modifier equipped"
+
+[node name="SummaryRow" type="HBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="PlayerPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayerMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow/PlayerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="PlayerSummary" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow/PlayerPanel/PlayerMargin"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="EnemyPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow/EnemyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="EnemyVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow/EnemyPanel/EnemyMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EnemyIntent" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow/EnemyPanel/EnemyMargin/EnemyVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="EnemySummary" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/SummaryRow/EnemyPanel/EnemyMargin/EnemyVBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="Controls" type="HBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EndTurnButton" type="Button" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/Controls"]
+layout_mode = 2
+text = "End Turn"
+
+[node name="HandHeader" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+layout_mode = 2
+text = "Hand"
+
+[node name="HandScroll" type="ScrollContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+size_flags_horizontal = 3
+
+[node name="HandButtons" type="HBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/HandScroll"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RewardHeader" type="Label" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+layout_mode = 2
+text = "Reward Choices"
+
+[node name="RewardScroll" type="ScrollContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+size_flags_horizontal = 3
+
+[node name="RewardButtons" type="HBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/CombatPanel/CombatMargin/CombatVBox/RewardScroll"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LogPanel" type="PanelContainer" parent="MarginContainer/VBox/Body/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogMargin" type="MarginContainer" parent="MarginContainer/VBox/Body/RightColumn/LogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="LogVBox" type="VBoxContainer" parent="MarginContainer/VBox/Body/RightColumn/LogPanel/LogMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="LogHeader" type="Label" parent="MarginContainer/VBox/Body/RightColumn/LogPanel/LogMargin/LogVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Logs and Deck"
+
+[node name="LogView" type="RichTextLabel" parent="MarginContainer/VBox/Body/RightColumn/LogPanel/LogMargin/LogVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+fit_content = false
+scroll_active = true
+bbcode_enabled = false
+text = ""
+
+[node name="MajorStingerPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = -12.0
+bus = &"Master"

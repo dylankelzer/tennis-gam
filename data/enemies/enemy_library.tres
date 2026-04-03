@@ -1,0 +1,614 @@
+[gd_resource type="Resource" script_class="EnemyLibraryResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/resources/enemy_content_resource.gd" id="1_qhilk"]
+[ext_resource type="Script" path="res://scripts/data/resources/enemy_library_resource.gd" id="2_04kcy"]
+
+[sub_resource type="Resource" id="Resource_qhilk"]
+script = ExtResource("1_qhilk")
+id = "ace_chimera"
+name = "Ace Chimera"
+act = 3
+style = "Monster"
+summary = "Shifts between serve patterns with unpredictable burst ceilings."
+max_health = 88
+intent_cycle = Array[Dictionary]([{
+"damage": 9,
+"name": "Kick Head",
+"pressure": 1,
+"serve_pattern": "probe"
+}, {
+"damage": 18,
+"name": "Flat Head",
+"serve_pattern": "punish"
+}])
+keywords = PackedStringArray("serve", "burst", "return_weak")
+
+[sub_resource type="Resource" id="Resource_04kcy"]
+script = ExtResource("1_qhilk")
+id = "ad_court_executor"
+name = "Ad Court Executor"
+act = 3
+category = "elite"
+style = "Human rival"
+summary = "A precision server that widens weak returns but shifts to plus-one patterns against prepared returners."
+max_health = 128
+intent_cycle = Array[Dictionary]([{
+"damage": 15,
+"name": "Wide Slider",
+"open_court": 1,
+"serve_pattern": "punish"
+}, {
+"damage": 10,
+"guard": 8,
+"momentum": 1,
+"name": "Kick Plus-One",
+"serve_pattern": "probe"
+}, {
+"damage": 22,
+"name": "First Volley Seal",
+"serve_pattern": "finish"
+}])
+keywords = PackedStringArray("elite", "serve", "net", "return_weak", "lob_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_hiled"]
+script = ExtResource("1_qhilk")
+id = "arthur_ashe_umbra"
+name = "Arthur Ashe Umbra"
+act = 4
+category = "boss"
+style = "US Open boss"
+summary = "The loudest, hardest final in the run: a champion-shadow that hits through noise, nerves, and fatigue."
+max_health = 340
+intent_cycle = Array[Dictionary]([{
+"damage": 20,
+"name": "Prime Time Serve",
+"pressure": 2,
+"serve_pattern": "punish"
+}, {
+"fatigue": 2,
+"name": "Concrete Grind",
+"open_court": 1
+}, {
+"damage": 30,
+"hits": 2,
+"name": "Tiebreak Torrent",
+"serve_pattern": "probe"
+}, {
+"damage": 42,
+"name": "Midnight Crown",
+"serve_pattern": "finish"
+}])
+keywords = PackedStringArray("boss", "final", "hardcourt", "power", "return_weak", "power_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_u3ikp"]
+script = ExtResource("1_qhilk")
+id = "backboard_ogre"
+name = "Backboard Ogre"
+act = 2
+category = "elite"
+style = "Monster"
+summary = "Reflects basic attacks and grows angrier when hit repeatedly."
+max_health = 102
+intent_cycle = Array[Dictionary]([{
+"guard": 12,
+"name": "Wall Back",
+"thorns": 2
+}, {
+"damage": 18,
+"name": "Crush Return"
+}])
+keywords = PackedStringArray("elite", "counter", "drop_weak", "topspin_weak")
+
+[sub_resource type="Resource" id="Resource_xkx6i"]
+script = ExtResource("1_qhilk")
+id = "ball_machine_hydra"
+name = "Ball-Machine Hydra"
+act = 3
+category = "elite"
+style = "Monster"
+summary = "A multi-headed launcher that floods the rally with projectiles."
+max_health = 132
+intent_cycle = Array[Dictionary]([{
+"damage": 6,
+"hits": 3,
+"name": "Triple Feed"
+}, {
+"momentum": 2,
+"name": "Overclock"
+}, {
+"damage": 26,
+"name": "Hydra Burst"
+}])
+keywords = PackedStringArray("elite", "multi_hit", "slice_weak", "control_weak")
+
+[sub_resource type="Resource" id="Resource_76344"]
+script = ExtResource("1_qhilk")
+id = "ball_machine_imp"
+name = "Ball-Machine Imp"
+style = "Monster"
+summary = "Pelts the player with mechanical rhythm until broken."
+max_health = 44
+intent_cycle = Array[Dictionary]([{
+"damage": 4,
+"hits": 3,
+"name": "Rapid Feed"
+}, {
+"damage": 10,
+"name": "Overheat",
+"self_vulnerable": 1
+}])
+keywords = PackedStringArray("multi_hit", "machine", "slice_weak", "power_weak", "serve_resist")
+
+[sub_resource type="Resource" id="Resource_rpowm"]
+script = ExtResource("1_qhilk")
+id = "centre_court_specter"
+name = "Centre Court Specter"
+act = 3
+category = "boss"
+style = "Wimbledon boss"
+summary = "A grass-court apparition that serves huge and closes at the net before you can reset."
+max_health = 286
+intent_cycle = Array[Dictionary]([{
+"damage": 18,
+"name": "White-Line Serve",
+"pressure": 1,
+"serve_pattern": "punish"
+}, {
+"guard": 10,
+"momentum": 1,
+"name": "Royal Approach",
+"serve_pattern": "approach"
+}, {
+"damage": 31,
+"name": "Champions' Volley",
+"serve_pattern": "finish"
+}])
+keywords = PackedStringArray("boss", "grass", "net", "return_weak", "lob_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_4lsx2"]
+script = ExtResource("1_qhilk")
+id = "clay_troll_grinder"
+name = "Clay Troll Grinder"
+category = "elite"
+style = "Monster"
+summary = "Stacks mud-like Fatigue and drags fights into the deep end."
+max_health = 78
+intent_cycle = Array[Dictionary]([{
+"damage": 9,
+"fatigue": 1,
+"name": "Heavy Bounce"
+}, {
+"guard": 14,
+"name": "Clay Shield"
+}])
+keywords = PackedStringArray("elite", "fatigue", "drop_weak", "net_weak", "serve_resist", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_2r8bq"]
+script = ExtResource("1_qhilk")
+id = "counterpuncher_apprentice"
+name = "Counterpuncher Apprentice"
+style = "Human rival"
+summary = "Blocks efficiently and punishes overcommitting."
+max_health = 42
+intent_cycle = Array[Dictionary]([{
+"guard": 8,
+"name": "Dig In"
+}, {
+"bonus_if_player_attacked": 4,
+"damage": 7,
+"name": "Counter Line"
+}])
+keywords = PackedStringArray("guard", "counter", "topspin_weak", "power_weak", "forehand_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_5008h"]
+script = ExtResource("1_qhilk")
+id = "doubles_poacher_duo"
+name = "Doubles Poacher Duo"
+category = "elite"
+style = "Human rivals"
+summary = "A coordinated pair that spikes damage when you leave the middle exposed."
+max_health = 72
+intent_cycle = Array[Dictionary]([{
+"damage": 8,
+"name": "Intercept",
+"pressure": 2
+}, {
+"damage": 14,
+"name": "Crash Middle"
+}])
+keywords = PackedStringArray("elite", "pair", "lob_weak", "down_the_line_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_a7qxk"]
+script = ExtResource("1_qhilk")
+id = "flashbulb_fiend"
+name = "Flashbulb Fiend"
+act = 4
+style = "Monster"
+summary = "Lives for the moment the lights pop and the point turns frantic."
+max_health = 102
+intent_cycle = Array[Dictionary]([{
+"damage": 7,
+"hits": 3,
+"name": "Strobe Feed"
+}, {
+"damage": 21,
+"name": "Blindside Burst"
+}])
+keywords = PackedStringArray("multi_hit", "burst", "control_weak", "power_weak")
+
+[sub_resource type="Resource" id="Resource_br1ny"]
+script = ExtResource("1_qhilk")
+id = "grandstand_gargoyle"
+name = "Grandstand Gargoyle"
+act = 3
+category = "elite"
+style = "Monster"
+summary = "Perches above the court and punishes weak defenses."
+max_health = 126
+intent_cycle = Array[Dictionary]([{
+"damage": 14,
+"name": "Stone Toss"
+}, {
+"guard": 18,
+"name": "Roost"
+}, {
+"bonus_if_player_guard_low": 8,
+"damage": 22,
+"name": "Dive Finish"
+}])
+keywords = PackedStringArray("elite", "pressure", "drop_weak", "power_weak")
+
+[sub_resource type="Resource" id="Resource_bmakc"]
+script = ExtResource("1_qhilk")
+id = "junkball_trickster"
+name = "Junkball Trickster"
+style = "Human rival"
+summary = "Alternates soft balls and awkward spins to scramble your hand quality."
+max_health = 40
+intent_cycle = Array[Dictionary]([{
+"damage": 4,
+"name": "No Pace",
+"pressure": 1
+}, {
+"name": "Short Angle",
+"open_court": 1
+}])
+keywords = PackedStringArray("pressure", "control", "topspin_weak", "power_weak", "forehand_weak", "net_weak")
+
+[sub_resource type="Resource" id="Resource_2o3lg"]
+script = ExtResource("1_qhilk")
+id = "lob_lobster"
+name = "Lob Lobster"
+act = 2
+category = "elite"
+style = "Monster"
+summary = "Uses looping lobs and clamps down when you over-extend."
+max_health = 94
+intent_cycle = Array[Dictionary]([{
+"damage": 10,
+"name": "Sky Clamp",
+"open_court": 2
+}, {
+"guard": 16,
+"name": "Shell Up"
+}])
+keywords = PackedStringArray("elite", "control", "drop_weak", "smash_weak")
+
+[sub_resource type="Resource" id="Resource_1gtoi"]
+script = ExtResource("1_qhilk")
+id = "melbourne_mirage"
+name = "Melbourne Mirage"
+category = "boss"
+style = "Australian Open boss"
+summary = "The first major final: a fast-court phantom that redlines early and feeds on crowd energy."
+max_health = 186
+intent_cycle = Array[Dictionary]([{
+"damage": 9,
+"momentum": 1,
+"name": "Heat Check"
+}, {
+"damage": 15,
+"name": "Bluecourt Redirect",
+"open_court": 2
+}, {
+"damage": 23,
+"name": "Night Session Finish"
+}])
+keywords = PackedStringArray("boss", "rally", "hardcourt", "return_weak", "power_weak", "net_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_ci08q"]
+script = ExtResource("1_qhilk")
+id = "mirror_rival"
+name = "Mirror Rival"
+act = 3
+style = "Human rival"
+summary = "Copies your tempo and punishes predictable sequencing."
+max_health = 82
+intent_cycle = Array[Dictionary]([{
+"name": "Read Pattern",
+"pressure": 1
+}, {
+"bonus_if_same_tag": 6,
+"damage": 15,
+"name": "Mirror Strike"
+}])
+keywords = PackedStringArray("mindgame", "control", "tempo_resist", "slice_resist", "control_resist", "forehand_weak")
+
+[sub_resource type="Resource" id="Resource_hiq3q"]
+script = ExtResource("1_qhilk")
+id = "moonball_goblin"
+name = "Moonball Goblin"
+style = "Monster"
+summary = "Floats looping balls that add Fatigue when unanswered."
+max_health = 38
+intent_cycle = Array[Dictionary]([{
+"damage": 5,
+"fatigue": 1,
+"name": "High Arc"
+}, {
+"guard": 6,
+"name": "Backpedal"
+}])
+keywords = PackedStringArray("fatigue", "tempo", "net_weak", "volley_weak", "smash_weak")
+
+[sub_resource type="Resource" id="Resource_mgjts"]
+script = ExtResource("1_qhilk")
+id = "neon_howler"
+name = "Neon Howler"
+act = 4
+style = "Monster"
+summary = "A fluorescent courtside beast that rattles focus before unloading on short balls."
+max_health = 96
+intent_cycle = Array[Dictionary]([{
+"name": "Feedback Screech",
+"pressure": 2
+}, {
+"damage": 19,
+"name": "Flash Snap",
+"open_court": 1
+}])
+keywords = PackedStringArray("pressure", "monster", "power_weak")
+
+[sub_resource type="Resource" id="Resource_876yp"]
+script = ExtResource("1_qhilk")
+id = "net_bandit"
+name = "Net Bandit"
+act = 2
+style = "Human rival"
+summary = "Rushes forward and punishes slow setups."
+max_health = 56
+intent_cycle = Array[Dictionary]([{
+"guard": 5,
+"momentum": 1,
+"name": "Sneak In"
+}, {
+"damage": 12,
+"name": "Sharp Volley"
+}])
+keywords = PackedStringArray("tempo", "net", "lob_weak", "down_the_line_weak", "volley_resist")
+
+[sub_resource type="Resource" id="Resource_w336w"]
+script = ExtResource("1_qhilk")
+id = "night_session_duo"
+name = "Night Session Duo"
+act = 4
+category = "elite"
+style = "Human rivals"
+summary = "A seeded pair that rides momentum swings and punishes weak second turns."
+max_health = 152
+intent_cycle = Array[Dictionary]([{
+"damage": 14,
+"name": "Spotlight Pounce",
+"pressure": 2
+}, {
+"guard": 16,
+"name": "Midnight Wall"
+}, {
+"damage": 24,
+"name": "Break Point Riot"
+}])
+keywords = PackedStringArray("elite", "pair", "tempo", "lob_weak", "down_the_line_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_kgj8n"]
+script = ExtResource("1_qhilk")
+id = "qualifier_bombardier"
+name = "Qualifier Bombardier"
+style = "Human rival"
+summary = "A ladder-climbing serve cannon that flattens weak returns and respects clean returners with a safer plus-one pattern."
+max_health = 41
+intent_cycle = Array[Dictionary]([{
+"damage": 8,
+"name": "Body Jam Serve",
+"pressure": 1,
+"serve_pattern": "jam"
+}, {
+"damage": 6,
+"guard": 4,
+"momentum": 1,
+"name": "Kick Probe",
+"serve_pattern": "probe"
+}, {
+"damage": 9,
+"name": "T-Serve Rush",
+"open_court": 1,
+"serve_pattern": "approach"
+}])
+keywords = PackedStringArray("serve", "tempo", "return_weak", "net_weak", "forehand_weak", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_eney5"]
+script = ExtResource("1_qhilk")
+id = "racquet_wraith"
+name = "Racquet Wraith"
+act = 2
+style = "Monster"
+summary = "A ghostly attacker that phases between Guard and burst."
+max_health = 58
+intent_cycle = Array[Dictionary]([{
+"guard": 10,
+"name": "Fade Out"
+}, {
+"damage": 13,
+"name": "Phantom Swipe"
+}])
+keywords = PackedStringArray("phase", "monster", "power_weak")
+
+[sub_resource type="Resource" id="Resource_8m008"]
+script = ExtResource("1_qhilk")
+id = "scoreboard_colossus"
+name = "Scoreboard Colossus"
+act = 4
+category = "elite"
+style = "Monster"
+summary = "A digital giant that escalates the pace every time it smells a finish."
+max_health = 160
+intent_cycle = Array[Dictionary]([{
+"fatigue": 2,
+"name": "Time Violation"
+}, {
+"guard": 18,
+"name": "Pixel Shield"
+}, {
+"bonus_if_player_guard_low": 8,
+"damage": 27,
+"name": "Statline Slam"
+}])
+keywords = PackedStringArray("elite", "pressure", "machine", "slice_weak", "control_weak")
+
+[sub_resource type="Resource" id="Resource_pdp6p"]
+script = ExtResource("1_qhilk")
+id = "servebot_hound"
+name = "Servebot Hound"
+act = 2
+style = "Monster"
+summary = "A four-legged server that threatens ace bursts every few turns."
+max_health = 62
+intent_cycle = Array[Dictionary]([{
+"damage": 6,
+"guard": 3,
+"momentum": 1,
+"name": "Laser Toss",
+"serve_pattern": "probe"
+}, {
+"damage": 16,
+"name": "Service Burst",
+"serve_pattern": "punish"
+}])
+keywords = PackedStringArray("serve", "machine", "return_weak", "control_weak")
+
+[sub_resource type="Resource" id="Resource_xxbwp"]
+script = ExtResource("1_qhilk")
+id = "stadium_slugger"
+name = "Stadium Slugger"
+act = 4
+style = "Human rival"
+summary = "Thrives under loud conditions and takes every ball early off the bounce."
+max_health = 98
+intent_cycle = Array[Dictionary]([{
+"damage": 14,
+"name": "Crowd Surge",
+"pressure": 1
+}, {
+"damage": 18,
+"name": "Step-In Strike"
+}])
+keywords = PackedStringArray("power", "tempo", "slice_resist", "control_weak", "forehand_weak")
+
+[sub_resource type="Resource" id="Resource_4jf1s"]
+script = ExtResource("1_qhilk")
+id = "subway_scrambler"
+name = "Subway Scrambler"
+act = 4
+style = "Human rival"
+summary = "Converts defense into offense in a single stride and never stops moving."
+max_health = 100
+intent_cycle = Array[Dictionary]([{
+"guard": 8,
+"momentum": 1,
+"name": "Track Down"
+}, {
+"bonus_if_player_guard_low": 5,
+"damage": 17,
+"name": "Passing Rip"
+}])
+keywords = PackedStringArray("counter", "footwork", "topspin_weak")
+
+[sub_resource type="Resource" id="Resource_7uvo3"]
+script = ExtResource("1_qhilk")
+id = "tempo_reaper"
+name = "Tempo Reaper"
+act = 3
+style = "Monster"
+summary = "Cuts down long turns by taxing extra card plays."
+max_health = 86
+intent_cycle = Array[Dictionary]([{
+"fatigue": 1,
+"name": "Tempo Tax"
+}, {
+"damage": 17,
+"name": "Cut Point"
+}])
+keywords = PackedStringArray("tax", "tempo", "slice_weak", "power_weak")
+
+[sub_resource type="Resource" id="Resource_40ghg"]
+script = ExtResource("1_qhilk")
+id = "terre_battue_tyrant"
+name = "Terre Battue Tyrant"
+act = 2
+category = "boss"
+style = "Roland-Garros boss"
+summary = "A clay monarch that drags out rallies until every footstep feels heavy."
+max_health = 230
+intent_cycle = Array[Dictionary]([{
+"damage": 10,
+"name": "Heavy Kicker",
+"spin": 2
+}, {
+"fatigue": 1,
+"name": "Red Dust Drag",
+"pressure": 2
+}, {
+"damage": 25,
+"name": "Chatrier Crush"
+}])
+keywords = PackedStringArray("boss", "summoner", "clay", "drop_weak", "net_weak", "power_weak", "serve_resist", "slice_resist")
+
+[sub_resource type="Resource" id="Resource_0ocha"]
+script = ExtResource("1_qhilk")
+id = "topspin_brute"
+name = "Topspin Brute"
+act = 2
+style = "Human rival"
+summary = "Heavy-spin forehands snowball if left unchecked."
+max_health = 60
+intent_cycle = Array[Dictionary]([{
+"damage": 10,
+"name": "Heavy Forehand",
+"spin": 2
+}, {
+"damage": 7,
+"name": "Push Back",
+"pressure": 1
+}])
+keywords = PackedStringArray("spin", "strength", "slice_weak", "control_weak", "forehand_weak")
+
+[sub_resource type="Resource" id="Resource_4ll8r"]
+script = ExtResource("1_qhilk")
+id = "volley_vampire"
+name = "Volley Vampire"
+act = 3
+style = "Monster"
+summary = "Steals life whenever it lands clean net contact."
+max_health = 84
+intent_cycle = Array[Dictionary]([{
+"damage": 11,
+"heal": 6,
+"name": "Drain Volley"
+}, {
+"guard": 9,
+"name": "Bat Retreat"
+}])
+keywords = PackedStringArray("drain", "net", "lob_weak", "down_the_line_weak")
+
+[resource]
+script = ExtResource("2_04kcy")
+enemies = [SubResource("Resource_qhilk"), SubResource("Resource_04kcy"), SubResource("Resource_hiled"), SubResource("Resource_u3ikp"), SubResource("Resource_xkx6i"), SubResource("Resource_76344"), SubResource("Resource_rpowm"), SubResource("Resource_4lsx2"), SubResource("Resource_2r8bq"), SubResource("Resource_5008h"), SubResource("Resource_a7qxk"), SubResource("Resource_br1ny"), SubResource("Resource_bmakc"), SubResource("Resource_2o3lg"), SubResource("Resource_1gtoi"), SubResource("Resource_ci08q"), SubResource("Resource_hiq3q"), SubResource("Resource_mgjts"), SubResource("Resource_876yp"), SubResource("Resource_w336w"), SubResource("Resource_kgj8n"), SubResource("Resource_eney5"), SubResource("Resource_8m008"), SubResource("Resource_pdp6p"), SubResource("Resource_xxbwp"), SubResource("Resource_4jf1s"), SubResource("Resource_7uvo3"), SubResource("Resource_40ghg"), SubResource("Resource_0ocha"), SubResource("Resource_4ll8r")]

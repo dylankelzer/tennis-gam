@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/unit_view.gd" id="1_unit_view"]
+[ext_resource type="PackedScene" path="res://scenes/combat/Character2D.tscn" id="2_character"]
+
+[node name="UnitView" type="Node2D"]
+script = ExtResource("1_unit_view")
+
+[node name="Character" parent="." instance=ExtResource("2_character")]

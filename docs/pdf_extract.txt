@@ -1,0 +1,1066 @@
+--- PAGE 1 ---
+Godot Architecture, Enemy AI, and Rally Combat System for a Tennis Roguelike Deckbuilder
+Executive summary
+This report proposes a production-ready, data-driven architecture in Godot Engine 1 for a single-player, turn-based roguelike deckbuilder that expresses tennis through a rally-resolution combat model and Slay the Spire–style run structure. It emphasizes (a) separation of simulation from presentation, (b) Resources + JSON for authored content, (c) deterministic seeds for reproducible runs, and (d) scalable enemy AI using finite state machines + utility scoring, optionally organized as a behavior tree layer for readability and tooling.
+Key recommendations:
+• Godot version strategy: target Godot 4.6.1-stable (current maintenance release), and pin that version for a milestone while keeping a tested upgrade path, because Godot supports only the latest patch in a minor series. 2
+•Projectstructure:buildapure“rulesengine”in RefCounted classesand Resource definitions, with Node/Scene layers only for UI, animations, and orchestration. Godot explicitly recommends considering non-Node alternatives for heavy systems and points out that nodes have real overhead at scale. 3
+• Data-driven content: use Resource files ( .tres during development, .res on export) for editor-friendly authoring and type safety, and optionally generate/override via JSON for modding and balance iteration. 4
+• Rally combat: each encounter is a single standard game (Love/15/30/40/Deuce/Advantage/Game) per ITF rules; bosses extend into Short Sets or No-Ad variants (both explicitly defined by the ITF) to increase drama without making fights interminable. 5
+• Enemy AI: implement “intent-like” behavior (telegraphed patterns) with a state machine plus card utility scoring per decision, inspired by turn-based AI practice and the modularity goals highlighted in behavior-tree literature (origin popularized in Halo 2 6 AI work). 7
+• Balancing workflow: instrument pick rates, win rates, and encounter difficulty progression— aligning with the widely cited “metrics + iteration” approach used by Mega Crit Games 8 for Slay the Spire 9 balance. 10
+Assumptions and scope
+Assumptions (explicit because your prompt leaves them unspecified):
+• Single-player only; no multiplayer or netcode required. Networking considerations are limited to “don’t architect yourself into a corner.”
+• Encounters: normal fights = one standard tennis game (first to at least 4 points, win by 2 after deuce). 11
+    1
+
+--- PAGE 2 ---
+• Run structure: three “acts” (tournament rounds) with a path tree containing normal fights, elites, events, shops, and bosses (in the spirit of Slay the Spire). (Design choice; not dependent on a primary source.)
+• Presentation: 2D/GUI-first (typical for deckbuilders). 3D courts are optional and not assumed.
+• Core stats: you want sports-like stats (stamina, endurance, strength, etc.). This report maps them to
+combat mechanics as Stamina (per-turn currency), Endurance (max stamina + recovery), Strength/Power (pressure output), Accuracy (error rate), plus tennis-adjacent Footwork and Spin.
+• Lose condition: losing the encounter’s game ends that fight; losing the run happens at a boss or when “Condition” reaches 0. “Condition” is added as a design assumption to preserve the “chip damage across fights” pacing deckbuilders rely on.
+Scope:
+• Godot project architecture (folders, scenes, scripts, resources, responsibilities)
+• Data-driven formats (JSON/TOML/CSV; and Godot Resources)
+• Godot patterns: scenes/nodes, signals, Autoloads, Resources, RefCounted , GDScript vs C#
+• Performance (desktop + mobile)
+• Enemy AI archetypes + state machines + behaviors + scaling + 20 templates
+• Rally combat: tennis scoring + rally pressure meter + four-phase point loop + boss extensions
+• Content tables for classes/enemies/bosses/relics/cards
+• Integration notes, balancing guidelines, test cases, and implementation prompts for coding agents
+Godot architecture for a data-driven deckbuilder Recommended Godot version and release posture
+Recommendation: use Godot 4.6.1-stable as the baseline engine version for this project right now. Rationale:
+• Godot 4.6 is a stable release and explicitly positioned as a new “polish + performance optimization” period. 12
+• 4.6.1 is a maintenance release and Godot explicitly notes maintenance releases are expected to be safe upgrades, with standard “backup/version control” cautions. 13
+• Godot’s release policy indicates that only the latest patch in a given minor series is supported, pushing you toward “pin the engine version per milestone + upgrade intentionally.” 14
+• The official archive confirms 4.7 is in dev snapshots while 4.6 is stable/maintained, matching the usual “avoid dev builds for production” discipline. 15
+Architectural principle: separate simulation from scenes
+Godot’s core model is a tree of scenes, each a tree of nodes, that becomes active when added to the
+SceneTree. 16
+Deckbuilders benefit from a deterministic simulation core that can run headless and be unit-tested. Godot’s own best practices emphasize that nodes have limits at scale and you should consider more lightweight objects where appropriate. 17
+ 2
+
+--- PAGE 3 ---
+Concrete approach:
+•RulesEngine(puresimulation): RefCounted classesanddomainstructs(deck,hand,match state, rally state, RNG, AI planner).
+•Definitions(authoring): Resource definitionsforCards/Relics/Enemies/Bosses/Maps.
+• Presentation layer: Scenes for UI, animations, camera, effects; it subscribes to simulation events via
+signals and renders state.
+RefCounted is a good fit for simulation objects because Godot automatically frees them when reference
+counts drop to zero (with the important caveat about cyclic references). 18 Project folder layout
+Godot allows any structure, but its best-practice guide provides guidance for maintainability and version control. 19
+   A practical layout:
+ • • • • • • • • • • • • • • • • • • • • • • • • • • •
+(third-party plugins)
+, sprites/ , vfx/ , ui/
+(bootstrap)
+(map, node selection)
+(combat UI + arena)
+(menus, settings, compendium)
+(simulation engine; mostly RefCounted)
+(Resource classes: CardDef, RelicDef, EnemyDef, etc.) ui/ (UIcontrollers)
+ai/ (AIevaluators,statemachines) (RNG, serialization, helpers)
+(optional runtime overrides)
+CardDef resources)
+(runtime save data; written at runtime using FileAccess/ResourceSaver)
+res://addons/
+ res://assets/
+   audio/
+res://scenes/
+main/
+combat/
+defs/
+,
+fonts/
+   overworld/
+  meta/
+ res://scripts/
+ core/
+  util/
+ res://data/
+ cards.json
+ relics.json
+ enemies.json
+ bosses.json
+ map_templates.json
+ res://resources/
+  cards/
+(
+.tres
+ relics/
+ enemies/
+ bosses/
+ maps/
+ user://saves/
+3
+
+--- PAGE 4 ---
+Scene responsibilities, Node tree conventions, and orchestration
+Godot’s instancing model uses PackedScene.instantiate() to create node hierarchies. 20
+Nodes receive _ready() after being added to the scene tree (and Godot documents ordering nuance).
+  21
+Core scenes:
+• • •
+(bootstrap): initializes Autoload singletons, loads main menu or continues run. : displays map path tree; commits player choices; launches encounters.
+:hostscombatUIandarena;bindstoa MatchController thatownsa (simulation).
+  Combat.tscn
+ MatchState
+ •
+UI sub-scenes (decoupled and reusable):
+• • •
+, CardWidget.tscn , RelicBar.tscn , StatusStrip.tscn (minimap court / positions / ball state)
+(telegraphed enemy intent)
+Main.tscn
+ Overworld.tscn
+ Rewards.tscn
+: card reward, relic reward, shop, or event.
+    CardHandView.tscn
+ CourtView.tscn
+ IntentView.tscn
+Godot-specific patterns: signals, Autoloads, and event routing
+Signals provide loose coupling: connected listeners react without direct references, improving flexibility.
+22
+Recommended pattern:
+• Simulation emits events through a thin Node “bus” (or a typed adapter), and UI subscribes.
+• Avoid turning every service into a global Autoload; Godot best practices explicitly warn Autoloads
+can add complications and are not automatically “the best” in every case. 23 Autoload facts relevant here:
+• Autoloads are added under the root viewport before scenes load. 24
+• Autoload is a tool; it “loads automatically under /root,” not magic singleton enforcement. 23
+Recommended Autoloads (keep this small):
+ • • • • •
+(settings, platform flags, debug toggles) (save/load)
+(loads card/relic/enemy defs at startup) (music/sfx routing)
+(current run seed, act, player deck, relics, health/condition)
+GameApp
+ SaveManager
+ DataRegistry
+ Audio
+ RunManager
+Resources vs JSON/TOML/CSV for data-driven content
+Godot’s Resource system is the closest equivalent to Unity “ScriptableObjects”: reusable data containers that serialize cleanly, and can be edited in the inspector. Godot highlights that Resources auto-(de)serialize,
+ 4
+
+--- PAGE 5 ---
+ can nest sub-resources, can be saved text-first ( .tres ) for version control, and then get exported as compact binary ( .res ). 25
+Recommended hybrid:
+• Primary authoring: , RelicDef , EnemyDef Resources in res:// resources/ .
+• Balance iteration / pipelines: •UseCSVasaspreadsheetsourceoftruthfornumerictuning;Godot’s FileAccess supports
+reading CSV lines via get_csv_line() . 26
+• Export those CSVs into JSON at build time, or parse at runtime for “dev mode.”
+• Modding (optional): allow JSON override layers because Godot has first-class JSON stringify/parse.
+27
+• TOML: not built-in; only use if you want human-friendly configs and are willing to ship a TOML parser.
+Saving:
+• is the basic persistent I/O API (write to user:// ). 28
+• provides INI-style human-readable save/config storage for “settings-ish” data. 29 • Resource-based saves can be highly ergonomic when you want typed data; ResourceLoader/
+ResourceSaver are purpose-built for this. 30
+• Godot documents FileAccess for custom binary I/O ( get_*/store_* ). 31
+GDScript vs C# tradeoffs in Godot 4.x
+Godot supports both languages well, but platform constraints matter.
+• Godot’s docs state that Godot 4 C# projects currently cannot be exported to the web, and iOS support has limitations/experimental status. 32
+• Godot provides official documentation for C# API differences and idioms (PascalCase, etc.). 33
+• Godot’s platform-state blog for C# explains the evolution of platform support and is worth reading if
+you plan a wide platform matrix. 34
+Recommendation for this project (given “mobile/desktop” and no need for web builds stated):
+• Use GDScript for gameplay (fast iteration, editor integration, fewer deployment surprises).
+• Use C# optionally for tooling (offline build steps, content validators) if your team prefers it and your
+target platforms are compatible.
+Performance posture for mobile and desktop
+Godot’s performance docs emphasize measuring first (profiler, timers, external profilers). 35
+The Performance class exposes runtime monitors like draw calls and memory. 36
+ .tres
+ CardDef
+       FileAccess
+ ConfigFile
+   5
+
+--- PAGE 6 ---
+Deckbuilders are usually CPU-light, UI-heavy. High-value tactics:
+• Keep simulation off the scene tree: fewer Nodes processing each frame reduces overhead (aligned with Godot’s “avoid nodes for everything” guidance). 17
+• Disable processing ( set_process(false) ) for UI components when hidden; update only on events.
+• Batch UI where possible: draw-call count can dominate on low-end GPUs; Godot’s batching explanations underscore why fewer draw calls matter. 37
+• Pick renderer wisely for mobile: Godot documents multiple renderers (Forward+, Mobile, Compatibility) with different hardware/API requirements. 38
+•Avoidper-frameallocationsinside _process;prefercachedarraysandpooledobjects.
+• Preload heavy resources before combat; Godot best practices discuss load vs preload to avoid
+runtime stutters. 39
+Rally-based combat system design
+Tennis scoring foundation and encounter formats ThetennisscoringmodelisstandardizedbytheInternationalTennisFederation 40 :
+• Standard game: Love, 15, 30, 40, Game; at 40–40 it’s Deuce; then Advantage; you must win two consecutive points after Deuce to win the game. 41
+• Approved alternatives include No-Ad games and Short Sets (first to 4 games, with tie-break rules) for events that want shorter formats. 42
+For player familiarity, the United States Tennis Association 43 provides a clear “how scoring works” summary (4 points to win a game; deuce/advantage logic). 44
+Encounter formats (design decision)
+• Normal fights: Standard single game (matches per ITF Rule 5). 41
+• Elite fights: No-Ad single game (faster, higher variance). 42
+• Boss fights: Short Set to 4 games (or best-of-3 games) for sustained tension without full-length sets.
+42
+Core battle loop: four phases per point
+Each point is the “mini-combat” inside the larger game/encounter.
+Phase A — Setup - Determine server (per game). - Apply between-point persistent effects (fatigue, crowd,
+boss auras). - Draw starting hands (player + enemy) with a Serve/Return constraint.
+Phase B — Rally turns - Turn-based alternating play until the point resolves. - Player turn: play shot/utility cards up to stamina budget. - Enemy turn: AI selects response cards.
+Phase C — Resolution - Resolve accuracy checks, forced errors, and “winner” thresholds. - Award point; apply “Condition damage” or other across-run consequences.
+  6
+
+--- PAGE 7 ---
+Phase D — Between-point - Reset point-only statuses; keep persistent statuses. - Increment tennis score (15/30/40 etc). - Refill partial stamina based on Endurance recovery.
+Rally Pressure Meter as the “combat HP” analogue
+To make tennis feel like tennis (not reskinned HP combat), use two coupled meters:
+•RallyPressure(RP):asignedmeter [-RP_MAX, +RP_MAX] representingwhocontrolstherally right now.
+• +RP favorstheplayer; -RP favorstheenemy.
+• When RP reaches thresholds, it triggers point resolution.
+• Stability (STB): each side has point-specific stability, representing balance/positioning under
+pressure; low stability increases error chance on difficult balls.
+This satisfies your requirement for: - “advantage/rally meter” (RP) - “winning points via x damage threshold” (RP threshold is the damage threshold)
+Suggested parameters - RP_MAX = 100 - WINNER_THRESHOLD = 100 (hit winner / force error) - ERROR_ZONE = 70+ (high-pressurezonewhereerrorratesclimb)
+Position, ball state, and spin
+To encode tennis tactics, include three compact state models:
+Courtposition(foreachside)- Baseline - InsideBaseline - ServiceLine - Net
+Ball height/state descriptor (what the next hitter faces) - (slice skid) - NormalBall - HighBall (topspinkick/moonball)- OnTheRise (timingwindow)- (volleyexchange)
+Spintags- Topspin - Slice - Flat - Kick
+Spin modifies: - ball height on bounce - stamina cost to attack - accuracy penalties if “wrong” shot into
+“wrong” spin
+Stamina vs Endurance vs Condition
+Use Stamina as the per-turn resource (Slay the Spire’s “Energy” analogue).
+• Endurance sets the maximum stamina and between-turn refresh.
+• Condition is the across-run health-like pool (damage taken across fights). This is optional but
+strongly recommended to preserve deckbuilder pacing; without it, every fight is a binary win/lose with little attrition tuning.
+Stamina interaction rules (recommended):
+•Startofyourturn: stamina = min(max_stamina, stamina + regen)
+• Some cards “overexert”: spend stamina you don’t have → gain Fatigue and lose Condition. 7
+         LowBall
+   AtNet
+   
+--- PAGE 8 ---
+ •Aftereachpoint:bothsidesrecover point_recovery stamina,modifiedbyrallylength. Card play order, counterplay, and resolution rules
+To preserve turn-based clarity:
+• Card effects apply immediately, but hit resolution occurs when a “Shot” card is played.
+• Separate card categories:
+• Shot: changes RP, ball state, position; may apply statuses.
+• Footwork: modifies position and stability; reduces incoming pressure next enemy turn.
+• Focus: draw, discard, stance shifts; low/no pressure.
+• Reaction (optional advanced layer): may be played during opponent turn if you have “Prepared” stacks.
+Resolution for a Shot card:
+1. Validate prerequisites (position, ball height). 2. Pay stamina cost.
+3. Compute effective accuracy:
+4. Base accuracy
+5. ± modifiers from statuses (Fatigue, OffBalance, LowBounce, etc.) 6. ± matchup modifiers (e.g., slice into high ball)
+7. Roll RNG (seeded deterministically).
+8. If hit succeeds:
+9.Apply RP += pressure_delta
+10. Update ball state/spin for opponent
+11. Apply statuses
+12. If miss (unforced error):
+13. Immediate point loss unless a “Let/Replay” mechanic is present (optional boss gimmick).
+Status effects tuned for tennis
+A compact status suite that produces tactical richness:
+• Fatigue (stacking): -accuracy , -stability , increases stamina costs of Power shots • LowBounce: enemy power shots cost +1 stamina; volleys gain accuracy
+• HighBounce: smash enabled; slice less effective
+• OffBalance: next shot accuracy penalty; footwork cards remove
+• Wide: if you don’t play Footwork this turn, lose stability
+• NetPressure: passing shots gain pressure; lobs gain accuracy • ReadServe: next enemy serve loses pressure and/or accuracy • Confidence: small RP bonus when playing upgraded shots
+Match progression flowchart
+  flowchart TD
+    A[Encounter starts] --> B{Encounter type}
+      8
+
+--- PAGE 9 ---
+      B -->|Normal| C[Standard single game]
+    B -->|Elite| D[No-Ad single game]
+    B -->|Boss| E[Short set / Best-of games]
+    C --> F[Point loop]
+    D --> F
+    E --> F
+    F --> G{Game/Set won?}
+    G -->|No| F
+    G -->|Yes| H[Rewards + map progression]
+Rally resolution flowchart
+  flowchart TD
+    S[Point Setup] --> T[Deal hands, set server/receiver stance]
+    T --> P[Player Turn]
+    P --> P1[Play cards within stamina]
+    P1 --> P2[If Shot played, resolve hit]
+    P2 --> E[Enemy Turn]
+    E --> E1[AI selects cards]
+    E1 --> E2[Resolve hit]
+    E2 --> R{RP threshold reached or forced error?}
+    R -->|No| P
+    R -->|Yes| W[Point Winner determined]
+    W --> U[Update tennis score]
+    U --> B[Between-point cleanup + partial stamina recovery]
+    B --> S
+Boss extensions: resting and “points over time”
+To make bosses feel like bosses, give them match-long powers that change the cadence:
+• Rest action: boss can choose “Changeover” once per game, spending its turn to recover stamina and purge Fatigue, but it concedes some RP (player gains momentum).
+• Passive point pressure: boss gains automatic RP drift each rally turn unless the player plays tactical counters (e.g., “Slow the Pace”, “Deep Center Ball”).
+• Between-game recovery (Short Set format): boss recovers more between games than normal enemies, pushing the player to end rallies decisively.
+Enemy AI design and templates
+AI architecture: state machine + utility scoring + optional behavior-tree structure
+For turn-based tactical AI, the goal is consistent telegraphing and readable design. A widely used way to manage complex behavior is layered decision logic, popularized in game AI work such as Bungie’s Halo-era systems (commonly discussed in the behavior-tree lineage), and also formalized in broader surveys of behavior trees and state-based control. 45
+  9
+
+--- PAGE 10 ---
+A practical hybrid for this project:
+• Finite State Machine (FSM) at the top:
+• ServeMode , ReturnMode , Defend , Attack , NetPlay , Panic , CloseOut
+• Utility scoring within a state:
+• evaluate each playable card in hand
+• choose the argmax subject to stamina, prerequisites, and “scripted boss patterns”
+• Behavior-tree style composition (optional):
+• express “priority selectors” like: If can win point now → do it; else if in danger → defend; else execute
+archetype plan.
+FSMs are a well-established way to structure game behavior, and the “State pattern / FSM” discussion and
+tradeoffs are widely documented in game programming literature. 46 AI state machine mermaid diagram
+  stateDiagram-v2
+    [*] --> Setup
+    Setup --> ServeMode: is_server
+    Setup --> ReturnMode: !is_server
+    ServeMode --> Attack: serve_landed
+    ServeMode --> Panic: double_fault_risk
+    ReturnMode --> Defend: heavy_serve_incoming
+    ReturnMode --> Attack: weak_serve_incoming
+    Defend --> Attack: stabilized && rp_favorable
+    Attack --> NetPlay: approach_played
+    NetPlay --> Attack: forced_back
+    Attack --> CloseOut: rp_near_threshold
+    CloseOut --> [*]: point_over
+    Panic --> Defend: reset_plan
+    Defend --> [*]: point_over
+AI decision model
+Each enemy has:
+• Archetype parameters: aggression, risk tolerance, preferred ranges • Skill stats: stamina max/regen, accuracy, power, spin, footwork
+• A decklist (like the player) with rarity weighting
+• “Signature” mechanics (aura, unique statuses, scripted phases)
+Utility function sketch
+        10
+
+--- PAGE 11 ---
+For each candidate card c in hand:
+• (position/ball-state prereqs) • (stamina)
+• score:
+Then choose best, possibly with controlled randomness to avoid predictability.
+Difficulty scaling
+Adopt a three-layer scaling system:
+• Act scaling: baseline stat increases, tighter decks, more upgraded cards
+• Ascension-like modifiers: enemies start with tempo buffs, player starts with less Condition, elites
+appear more often
+• Boss phase triggers: bosses unlock new patterns at deuce or at “game point”
+Elite/boss behavior patterns
+• Elites: fewer “filler” cards; more synergy; one “punish” mechanic that invalidates a common player plan.
+• Bosses: multi-phase scripts:
+• Phase 1: baseline plan
+• Phase 2: when behind, shift to high-variance
+• Phase 3: deuce lockdown pattern
+Twenty example enemy templates
+Notes: - Decks reference the 30 Sample Cards table later. - “Unlock” here means “first appears” (by act/
+progression), not something the player “unlocks to use.”
+ legal(c)
+ cost_ok(c)
+   U(c) = w_win * P(win_point | c) + w_safe * P(no_error | c) + w_plan *
+    plan_alignment(c) + w_counter * counter_value(c) - w_fatigue * fatigue_cost(c)
+  Enemy Kind First AI archetype Signature ability Deck sketch appears
+  Nervous Toss: Act 1, Scripted first serve each
+Rookie Server Human early Serve game has -10% accuracy, but if it
+lands, +10 RP
+Flat Serve x3, Block Return x2, Crosscourt Rally x3, Focus Breath x2
+  The Pusher Human Act 1 Defense whenever RP ≤ -30
+Gets Everything: Attrition/ gains +10 Stability
+Moonball x3, Defensive Slice x3, Split Step x2, Crosscourt Rally x3, Focus Breath x1
+11
+
+--- PAGE 12 ---
+ Enemy Kind First AI archetype Signature ability Deck sketch appears
+  Slice Merchant
+Human
+Act 1
+Control/Spin
+Low Bounce
+applied on slice hits
+Slice Backhand x3, Chip Return x2, Defensive Slice x2, Approach Shot x1, Drop Shot x1, Crosscourt Rally x3
+    Ace Threat: if
+Act 1 serving and RP ≥
+Big Server Human late Burst +40, “Flat Serve” gains +20
+pressure
+Flat Serve x4, Kick Serve x2, Inside-Out Forehand x2, Big Forehand x1, Focus Breath x1
+    Redirect: if player Act 2 plays a Power-tag
+Crosscourt Rally x3, Down-the-Line x2, Split Step x2, Defensive Slice x2, Passing Shot x1
+Counterpuncher Human early Reactive shot, gains Prepared 1
+  Baseliner Bot Monster Act 1 Programmed
+Ball Machine: +1 draw on its turn, but -1 max stamina
+Crosscourt Rally x5, Moonball x2, Focus Breath x2, Defensive Slice x2
+  Act 1 Stone Grip: Racquet Golem Monster elite Heavy immune to OffBalance
+Big Forehand x2, Slice Backhand x2, Crosscourt Rally x3, Overexert x1, Focus Breath x1
+  Net Gremlin
+Monster
+Act 1
+Net rush
+Sticky Net: starts point at ServiceLine
+Approach Shot x2, Punch Volley x3, Drop Volley x2, Lob x1, Split Step x2
+  Clay Wraith
+Monster
+Act 2
+Attrition
+Slow Court: both sides’ stamina regen -1, but Wraith gains +10 Stability
+Moonball x3, Heavy Topspin x3, Focus Breath x2, Crosscourt Rally x3
+  The Grinder Human Act 2 Stamina tax
+Long Rally: after 6 exchanges, player gains Fatigue 1
+Crosscourt Rally x4, Moonball x2, Defensive Slice x2, Split Step x2
+12
+
+--- PAGE 13 ---
+ Enemy Kind First AI archetype Signature ability Deck sketch appears
+ Drop Artist Human Act 2 Trickster point can’t be anticipated
+Disguise: first Drop Shot each
+Drop Shot x3, Chip Return x2, Slice Backhand x2, Lob x1, Crosscourt Rally x3
+  Serve-and-Volley Fanatic
+Human
+Act 2 late
+Net rush
+First Volley: first volley each point costs 0 stamina
+Flat Serve x2, Slice Serve x2, Approach Shot x2, Punch Volley x2, Drop Volley x1, Overhead Smash x1
+    Act 2 Heavy Rotation: Spin Demon Monster elite Spin control Topspin adds
+HighBounce 2
+Heavy Topspin x3, Kick Serve x2, Crosscourt Rally x2, Lob x1, Passing Shot x2
+    Foot Fault: if Umpire Shade Monster Act 2 Punisher player overexerts,
+lose 10 Condition
+Overexert x2, Crosscourt Rally x3, Focus Breath x2, Down-the-Line x2, Block Return x2
+    Reflect Pace: Act 3 when hit by
+The Wall Human early Denial Power-tag shot, reduce RP swing
+by 30%
+Defensive Slice x3, Split Step x3, Crosscourt Rally x3, Moonball x2
+  All In: +30% Glass Cannon Human Act 3 High power, -20%
+Flat Serve x3, Big Forehand x3, Down- the-Line x2, Overexert x2
+variance accuracy
+  Tentacle Reach: Court Kraken Monster Act 3 Tempo ignores Wide
+status
+Crosscourt Rally x3, Passing Shot x2, Lob x2, Heavy Topspin x2, Focus Breath x1
+  Broken Strings: Act 3 applies Fatigue 1
+Slice Backhand x2, Defensive Slice x2, Heavy Topspin x2, Drop Shot x2, Focus Breath x2
+String Sorcerer Monster elite Debuff when RP crosses ±60
+13
+
+--- PAGE 14 ---
+ Enemy Kind First AI archetype Signature ability Deck sketch appears
+ Turbo Junior Human Act 3 Mobility
+Explosive Footwork: footwork cards gain +10 RP swing
+Split Step x4, Inside- Out Forehand x2, Passing Shot x2, Crosscourt Rally x2
+  Finalist Phantom
+Monster
+Act 3 late
+Boss-like
+Crowd Surge: at Deuce, gains +2 stamina regen
+Crosscourt Rally x3, Heavy Topspin x2, Down-the-Line x2, Approach Shot x1, Overhead Smash x1, Focus Breath x1
+Content tables for classes, bosses, relics, and cards Classes with stats and starting decks
+Stat legend (recommended): - Condition: max across-run health - MaxSta: maximum stamina - Regen: stamina regained at turn start - Pwr/Acc/Spin/Ftwrk: 1–10 ratings for balancing
+Unlock order (as requested): Novice → Pusher → Slicer → Power → All‐Arounder → Baseliner → Serve & Volley → Master → Alcaraz
+   Class Unlock Condition MaxSta Regen Pwr Acc Spin Ftwrk
+Passive Starting identity deck (12)
+             Novice
+Start
+70 3
+3 4 6 4
+Learning Curve: first unforced
+5 error each game is
+“let” (replay point)
+Crosscourt Rally x4, Block Return x2, Focus Breath x2, Split Step x2, Flat Serve x1, Defensive Slice x1
+          14
+
+--- PAGE 15 ---
+   Class Unlock Condition MaxSta Regen Pwr Acc Spin Ftwrk
+Passive Starting identity deck (12)
+             Pusher
+Beat Act 1 boss
+85 3
+3 3 7 4
+Retrieve: gain +10 Stability
+7 when you play
+Defensive Slice
+Moonball x3, Defensive Slice x3, Crosscourt Rally x3, Split Step x2, Focus Breath x1
+             Slicer
+Beat Act 1 boss w/ Pusher
+75 3
+3 4 6 8
+Skid: Slice
+shots apply 5 LowBounce
+1
+Slice Backhand x3, Chip Return x2, Defensive Slice x2, Crosscourt Rally x3, Drop Shot x1, Focus Breath x1
+            Power
+Beat Act 2 boss
+70
+4
+3
+8
+5
+4
+5
+Big Targets: Power shots get +10 pressure when RP ≥ 0
+Big Forehand x2, Flat Serve x2, Inside-Out Forehand x2, Crosscourt Rally x2, Overexert x2, Focus Breath x2
+          15
+
+--- PAGE 16 ---
+   Class Unlock Condition MaxSta Regen Pwr Acc Spin Ftwrk
+Passive Starting identity deck (12)
+             All‐Arounder
+Beat Act 2 boss w/ Power
+80 4
+3 6 6 6
+Adapt: first
+card each 6 turn gets
++5% accuracy
+Crosscourt Rally x3, Down-the- Line x2, Split Step x2, Focus Breath x2, Slice Backhand x1, Heavy Topspin x1, Approach Shot x1
+    Baseliner
+Beat Act 2 elite run
+85 4
+4 5 7 6 6
+Depth Control: Crosscourt Rally adds +5 extra pressure
+Crosscourt Rally x4, Heavy Topspin x2, Moonball x2, Split Step x2, Focus Breath x2
+             Serve & Volley
+Beat Act 3 boss
+75 4
+3 6 6 4
+Close In:
+Approach 8 Shot costs 0 once per
+point
+Flat Serve x2, Slice Serve x2, Approach Shot x2, Punch Volley x2, Drop Volley x1, Overhead Smash x1, Split Step x2
+          16
+
+--- PAGE 17 ---
+   Class Unlock Condition MaxSta Regen Pwr Acc Spin Ftwrk
+Passive Starting identity deck (12)
+             Read
+Beat Act 3
+Masterbossw/ 90547777startofx1,
+S&V point, scry top 2 cards
+Game: at
+Crosscourt Rally x2, Down-the- Line x2, Heavy Topspin x1, Slice Backhand
+Approach Shot x1, Passing Shot x1, Focus Breath x2, Split Step x2
+    Alcaraz
+Clear run on Ascension 1
+85
+5
+4
+8
+7
+7
+9
+Explosive: first Footwork card each point grants Prepared 1
+Split Step x3, Inside- Out Forehand x2, Drop Shot x1, Lob x1, Passing Shot x2, Heavy Topspin x1, Focus Breath x2
+           Boss roster with match formats
+Boss fights use ITF-approved alternative scoring (No-Ad, Short Sets) when desired to control runtime and tension. 42
+   Boss Act Match Core gimmick Rest/tempo mechanic Deck
+format
+emphasis
+    The Umpire 1 Standard Punishes “Code Violation” adds Control + Shade game Overexert Fatigue punish
+  Ball Machine 1 No‐Ad game Draws extra None Baseline
+Prime cards
+spam
+17
+
+--- PAGE 18 ---
+   Boss Act Match Core gimmick Rest/tempo mechanic Deck
+format
+emphasis
+    Court Gremlin 1 Standard Starts with Rest: “Taunt” (skip Net rush King game NetPressure turn, gain Stability)
+    The Wall Reborn 2 Short set to 4 Reduces big RP Passive RP Defense swings suppression
+    Spin Demon 2 Short set to 4 HighBounce Rest: “Reset Strings” Spin combo Ascendant engine
+    Clay Wraith 2 Short set to 4 Stamina regen Passive stamina tax Attrition Monarch debuff
+    String Sorcerer 3 Short set to 4 Fatigue stacking Rest: removes Fatigue Supreme
+Debuff/ control
+    Kraken of the Baseline
+3 Short set to 4 Ignores Wide Passive RP drift Tempo
+    Finalist Phantom 3 Best-of-3 Powers up at Gets +Regen at Deuce Multi-phase games Deuce
+    Champion of 3 Best-of-3 Huge burst, low “All In” phase Burst Glass games accuracy
+    The Tournament 3 Short set + Rule changes “Changing Mixed Director tie-break mid-fight Conditions”
+  The Mythic Rival 3 Best-of-3 Mirrors your last Rest: copies buff Mirror games card states
+Relics list (30)
+Relic
+Lead Tape
+Dampener
+Polyester Strings
+Fresh Grips
+Wristband
+New Balls
+Court Shoes
+Rarity
+Common
+Common
+Common
+Common
+Common
+Common
+Common
+Effect
++1 Power (pressure +5% on Power-tag shots)
+First unforced error each game: -10 Condition damage Spin-tag shots apply +1 Spin status
++1 MaxSta on first point of each game
+Heal 2 Condition after each encounter
+First serve each point +5% accuracy Footwork cards gain +10 Stability
+                Compression Sleeve
+Common Fatigue stacks decay 1 faster between points
+     18
+
+--- PAGE 19 ---
+  Relic
+Overgrip
+Practice Cones
+Hawk‐Eye Token
+String Saver
+Headband
+Split‐Step Timer
+Training Ladder
+Clay Specialist
+Grass Specialist
+Small Sweet Spot
+Big Sweet Spot
+Rally Counter
+Champion’s Towel
+Titanium Frame
+Smart Targeting
+Serve Clock
+Net Cord Charm
+Mental Coach
+Physio Kit
+Lucky Coin Toss
+Trophy of the Tour
+Rarity
+Common
+Common
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Uncommon
+Rare
+Rare
+Rare
+Rare
+Rare
+Rare
+Rare
+Rare
+Boss
+Effect
++1 card draw on first turn of each point
+At rewards, see +1 extra common card choice
+Once per encounter, reroll an accuracy check
+Slice shots also grant Prepared 1
+If you play 3 cards in a turn, gain Focus 1
+Start each point with Wide immune 1
+Upgrades at rest also reduce card cost by 1 (once/run) Moonball and Topspin gain extra pressure in Act 2 Volleys gain +10% accuracy and +10 pressure
++1 MaxSta, -5% accuracy (risk/reward)
++10% accuracy on all shots
+After 6 exchanges in a point, gain +1 Regen
+Between games in boss fights: heal 15 Condition Power shots ignore LowBounce penalties
+First Down-the-Line each point gets +20 pressure Serves cost 1 less stamina
+Once per encounter, a missed Drop Shot becomes “Let” At Deuce, gain Confidence 2
+Remove 2 Fatigue after each encounter
+Always serve first; +1 MaxSta in first point
++1 relic slot choice at each boss chest
+                                            Signature Racquet Boss
+Choose one shot type; all cards of that type upgrade immediately
+   Sample cards list (30) with rarities and upgrades
+Legend: - Cost = stamina - Pressure = RP delta magnitude (signed by context) - Upgrades increase pressure,
+reduce cost, add statuses, or improve accuracy
+19
+
+--- PAGE 20 ---
+ ID Card Type Rarity Cost Base effect Upgrade
+   If serving: +20
+C01 Flat Serve Shot Common 1 pressure, accuracy
+85%
++25 pressure, 88%
+    If serving: +15
+C02 Slice Serve Shot Common 1 pressure, apply LowBounce 2
+LowBounce 1
+    If serving: +18
+C03 Kick Serve Shot Uncommon 2 pressure, apply +22 pressure
+HighBounce 1
+    If receiving: reduce C04 Block Return Shot Common 1 incoming pressure by
+15, set NormalBall
+also gain Prepared 1
+    If receiving: reduce 10 C05 Chip Return Shot Common 1 pressure, apply
+LowBounce 1
+reduce 12, LowBounce 2
+    C06 Crosscourt Shot Common 1 +10 pressure, sets +13 pressure Rally NormalBall
+    C07 Down-the- Shot Uncommon 2 +18 pressure, requires cost 1 Line NormalBall
+    C08 Inside-Out Shot Uncommon 2 +16 pressure; if Wide +20 pressure Forehand on enemy, +10
+    C09 Big Forehand Shot Uncommon 3 +30 pressure, accuracy +35 pressure 70%
+    C10 Heavy Shot Uncommon 2 +14 pressure, apply HighBounce 2 Topspin HighBounce 1
+  C11 Slice Shot Common 1 +8 pressure, apply +10 pressure Backhand LowBounce 1
+  Defensive -10 pressure (pulls RP
+C12 Slice Shot Common 1 toward 0), gain Stability 14
+Stability 10
+    +6 pressure, apply
+C13 Moonball Shot Common 1 HighBounce 1, enemy +8 pressure
+Power shots cost +1
+  C14 Drop Shot Shot Uncommon 2 If enemy at Baseline: reduce cost 1 +22 pressure, else +8
+20
+
+--- PAGE 21 ---
+ ID Card Type Rarity Cost Base effect Upgrade
+   If under NetPressure:
+C15 Lob Shot Common 2 +18 pressure and +22 pressure
+remove NetPressure
+    C16 Passing Shot Shot Uncommon 2 If enemy at Net: +25 +30 pressure pressure
+    C17 Approach Shot Common 1 Move self toward Net; +16 pressure Shot +12 pressure
+    C18 Punch Volley Shot Common 1 If at Net: +14 pressure, +17 pressure accuracy 90%
+  C19 Drop Volley Shot Uncommon 1 If at Net: +18 pressure, OffBalance 2 apply OffBalance 1
+  Overhead If HighBall: +35
+C20 Smash Shot Rare 2 pressure, else fails +40 pressure
+(error)
+  C21 Split Step Footwork Common 1 Gain Stability 12 and Stability 16 remove Wide
+  C22 Sprint Wide Footwork Common 1 Convert Wide → Prepared 2 Prepared 1
+    C23 Recover to Footwork Common 1 Reduce enemy reduce 14 Center pressure by 10
+    C24 Focus Breath Focus Common 0 Draw 1; remove draw 2 Fatigue 1
+  C25 Study Focus Uncommon 1 Scry 2; gain scry 3 Opponent Confidence 1
+  Rally Until end of point: C26 Patience Focus Uncommon 1 Defensive Slice gives
++5 pressure too
+also heal 3 Condition after point
+  C27 Overexert Utility Uncommon 0 Gain +2 stamina this +3 stamina turn; gain Fatigue 1
+  Next Shot gets +15
+C28 Time the Rise Utility Rare 1 pressure and +10% +20 pressure
+accuracy
+  Randomly: Drop/Lob/
+C29 Trick Shot Shot Rare 2 Passing at +22 +26 pressure
+pressure
+21
+
+--- PAGE 22 ---
+ ID Card Type Rarity Cost Base effect Upgrade
+Implementation details with Godot code snippets
+All snippets are GDScript-oriented and assume the “simulation core” is RefCounted and/or Resource , not Node , consistent with Godot’s best-practice guidance to avoid putting everything into nodes. 3
+Mermaid scene architecture diagram
+  graph TD
+    A[Main.tscn] --> B[Overworld.tscn]
+    A --> C[Combat.tscn]
+    A --> D[Meta UI / Menus]
+    subgraph Autoloads
+      G1[RunManager]
+      G2[DataRegistry]
+      G3[SaveManager]
+      G4[Audio]
+      G5[GameApp]
+end
+    B -->|start encounter| C
+    C -->|win/lose| E[Rewards.tscn]
+    E --> B
+    C --> UI1[CardHandView]
+    C --> UI2[CourtView]
+    C --> UI3[IntentView]
+    C --> M1[MatchController Node]
+    M1 --> S1[MatchState RefCounted]
+    S1 --> S2[RallyState RefCounted]
+    S1 --> S3[Deck/Hand/Discard RefCounted]
+Card data loading from JSON (override layer)
+Godot’s JSON API supports stringify/parse for serializing and loading structured content. 27 For persistent storage, FileAccess provides reading and writing to user:// . 28
+ Champion’s If at Deuce: remove all
+C30 Poise Power Rare 2 Fatigue; gain Confidence 3
+Confidence 2
+     22
+
+--- PAGE 23 ---
+ # scripts/autoload/DataRegistry.gd
+extends Node
+class_name DataRegistry
+var cards: Dictionary = {}
+var relics: Dictionary = {}
+var enemies: Dictionary = {}
+# id -> CardDef (Resource or Dictionary)
+  func _ready() -> void:
+      load_card_overrides_json("res://data/cards.json")
+  func load_card_overrides_json(path: String) -> void:
+      if not FileAccess.file_exists(path):
+return
+      var f := FileAccess.open(path, FileAccess.READ)
+      var txt := f.get_as_text()
+      var parsed := JSON.parse_string(txt)
+      if typeof(parsed) != TYPE_ARRAY:
+          push_error("cards.json must be an array of card objects")
+          return
+      for card_dict in parsed:
+          if typeof(card_dict) != TYPE_DICTIONARY:
+              continue
+          var id := str(card_dict.get("id", ""))
+          if id == "":
+continue
+cards[id] = card_dict # keep as dict or convert to a Resource instance Deck shuffling and deterministic RNG
+Determinism matters for debugging, replays, and consistent AI evaluation. (Design recommendation.)
+  # scripts/core/Deck.gd
+  extends RefCounted
+  class_name Deck
+  var draw_pile: Array[String] = []     # card IDs
+  var discard_pile: Array[String] = []
+  func shuffle_into_draw(rng: RandomNumberGenerator) -> void:
+      # Move discard into draw and shuffle
+      draw_pile.append_array(discard_pile)
+      discard_pile.clear()
+   23
+
+--- PAGE 24 ---
+        for i in range(draw_pile.size() - 1, 0, -1):
+          var j := rng.randi_range(0, i)
+          var tmp := draw_pile[i]
+          draw_pile[i] = draw_pile[j]
+          draw_pile[j] = tmp
+  func draw(n: int) -> Array[String]:
+      var out: Array[String] = []
+      for _k in range(n):
+          if draw_pile.is_empty():
+              break
+          out.append(draw_pile.pop_back())
+      return out
+Tennis scoring as a pure state object
+This matches ITF standard game logic (Love/15/30/40/Deuce/Advantage/Game). 41
+  # scripts/core/TennisScore.gd
+  extends RefCounted
+  class_name TennisScore
+  # point_count: 0..infinity (deuce loops)
+  var server_points: int = 0
+  var receiver_points: int = 0
+  func _four_point_name(p: int) -> String:
+      match p:
+          0: return "Love"
+          1: return "15"
+          2: return "30"
+          3: return "40"
+          _: return str(p)
+  func point_to_server() -> void:
+      server_points += 1
+  func point_to_receiver() -> void:
+      receiver_points += 1
+  func is_deuce() -> bool:
+      return server_points >= 3 and receiver_points >= 3 and server_points ==
+  receiver_points
+  func advantage_side() -> String:
+    24
+
+--- PAGE 25 ---
+        # returns "server", "receiver", or ""
+      if server_points >= 3 and receiver_points >= 3:
+          if server_points == receiver_points + 1:
+              return "server"
+          if receiver_points == server_points + 1:
+              return "receiver"
+      return ""
+  func is_game_over() -> bool:
+      if server_points >= 4 or receiver_points >= 4:
+          return abs(server_points - receiver_points) >= 2
+      return false
+  func winner() -> String:
+      if not is_game_over():
+          return ""
+      return "server" if server_points > receiver_points else "receiver"
+  func display() -> String:
+      if is_game_over():
+          return "Game"
+      if is_deuce():
+          return "Deuce"
+      var adv := advantage_side()
+      if adv != "":
+          return "Ad " + ("In" if adv == "server" else "Out")
+      return _four_point_name(server_points) + " - " +
+  _four_point_name(receiver_points)
+Rally resolution skeleton
+  # scripts/core/RallyResolver.gd
+  extends RefCounted
+  class_name RallyResolver
+  const RP_MAX := 100
+  func apply_shot(state: Dictionary, shot: Dictionary, rng:
+  RandomNumberGenerator) -> Dictionary:
+      # state keys (example): rp, ball_state, server_is_player, player_stability,
+  enemy_stability, etc.
+      var cost := int(shot.get("cost", 1))
+      if state["active_stamina"] < cost:
+          return _force_error(state, "Out of stamina")
+      state["active_stamina"] -= cost
+    25
+
+--- PAGE 26 ---
+        var base_acc := float(shot.get("acc", 0.85))
+      var acc := clamp(base_acc + float(state.get("acc_mod", 0.0)), 0.05, 0.99)
+      var roll := rng.randf()
+      if roll > acc:
+          return _force_error(state, "Unforced error")
+      var pressure := int(shot.get("pressure", 10))
+      # Signed pressure: player shots push rp positive, enemy shots push negative
+      state["rp"] += pressure if state["active_side"] == "player" else -pressure
+      state["rp"] = clamp(state["rp"], -RP_MAX, RP_MAX)
+      # update ball state/spin (simplified)
+      state["ball_state"] = shot.get("next_ball_state", "NormalBall")
+      return state
+  func point_is_over(state: Dictionary) -> bool:
+      return abs(int(state["rp"])) >= RP_MAX or bool(state.get("forced_error",
+false))
+  func point_winner(state: Dictionary) -> String:
+      if bool(state.get("forced_error", false)):
+          return "enemy" if state["active_side"] == "player" else "player"
+      return "player" if state["rp"] >= RP_MAX else "enemy"
+  func _force_error(state: Dictionary, reason: String) -> Dictionary:
+      state["forced_error"] = true
+      state["error_reason"] = reason
+      return state
+AI decision loop using deck + stamina
+  # scripts/ai/EnemyAI.gd
+  extends RefCounted
+  class_name EnemyAI
+  func choose_cards_to_play(ai_ctx: Dictionary) -> Array[Dictionary]:
+      # ai_ctx: hand (Array[card_dict]), stamina, rp, position, ball_state,
+  archetype weights, etc.
+      var chosen: Array[Dictionary] = []
+      var stamina := int(ai_ctx["stamina"])
+      var hand: Array = ai_ctx["hand"]
+      while true:
+          var best_card := null
+    26
+
+--- PAGE 27 ---
+          var best_u := -INF
+        for c in hand:
+            var cost := int(c.get("cost", 1))
+            if cost > stamina:
+                continue
+            if not _is_legal(ai_ctx, c):
+continue
+            var u := _utility(ai_ctx, c)
+            if u > best_u:
+                best_u = u
+                best_card = c
+        if best_card == null:
+            break
+# play it
+        chosen.append(best_card)
+        stamina -= int(best_card.get("cost", 1))
+        hand.erase(best_card)
+        # stop early if close-out achieved
+        if abs(int(ai_ctx["rp"])) >= 80 and best_u < 5.0:
+            break
+    return chosen
+func _is_legal(ai_ctx: Dictionary, c: Dictionary) -> bool:
+    # Example: require serving, net position, or ball state
+    var req := c.get("requires", {})
+    if typeof(req) != TYPE_DICTIONARY:
+        return true
+    if req.has("must_be_server") and bool(req["must_be_server"]) !=
+bool(ai_ctx["is_server"]):
+        return false
+return true
+func _utility(ai_ctx: Dictionary, c: Dictionary) -> float:
+    var rp := float(ai_ctx["rp"])
+    var pressure := float(c.get("pressure", 0))
+    var acc := float(c.get("acc", 0.85))
+    var risk := (1.0 - acc) * 10.0
+    # Prefer defense when losing, prefer close-out when winning
+    var want_defend := clamp(-rp / 50.0, 0.0, 1.0)
+    var want_attack := clamp(rp / 50.0, 0.0, 1.0)
+27
+
+--- PAGE 28 ---
+        var u := 0.0
+      u += want_attack * pressure
+      u += want_defend * max(0.0, -pressure)  # defensive shots might be modeled
+  as negative pressure
+u -= risk
+      # Archetype weighting example
+      var tags := c.get("tags", [])
+      if "slice" in tags:
+          u += float(ai_ctx.get("w_slice", 0.0))
+      if "net" in tags:
+          u += float(ai_ctx.get("w_net", 0.0))
+      return u
+Integration, balancing, test plan, and implementation prompts Integration guidelines
+Principle: simulation produces events, UI consumes them.
+• Simulation executes as a transaction: apply player inputs → resolve → emit a compact event list ( CardPlayed , RPChanged , StatusApplied , PointEnded , ScoreChanged ).
+• UI replays those events into animations. If you later support “fast mode,” you simply skip animations and apply end state.
+Godot mechanics that support this well:
+• Signals for event publishing and decoupling. 22
+• Autoloads for limited “global” services, with caution per best practices. 47 • Resources for definitions and save-friendly typed data. 25
+Balancing guidelines
+Deckbuilders benefit from instrumentation and iteration. Mega Crit’s public material on Slay the Spire highlights heavy reliance on metrics-driven, data-driven development to manage balance and keep content viable. 10
+Recommended metrics:
+• Card pick rate at reward screens
+• “Card appears in winning deck” rate
+• Average Condition loss per encounter by act
+• Average points per encounter (how often deuce occurs) • RP swing distribution (are winners too spiky?)
+• AI error rates vs player error rates
+      28
+
+--- PAGE 29 ---
+Test cases
+Deterministic tests (seeded RNG): 1. Tennis scoring correctness
+2. Love → 15 → 30 → 40 → Game
+3. Deuce loops: 40–40 → Ad In → Deuce → Ad Out → Deuce → ... Based on ITF definition. 41
+4. Rally meter boundaries 5. RP clamps at ±100
+6. Point winner matches sign and threshold rules 7. Stamina invariants
+8. Costs never drop stamina below 0 unless Overexert used 9. Regen applies only at correct phase
+10. Card legality
+11. Serve-only cards illegal when not server
+12. Volley cards illegal if not at Net unless card says otherwise 13. AI action legality
+14. AI never chooses a card it cannot afford
+15. AI never chooses a card whose prerequisites fail
+16. Serialization
+17. Save/load preserves deck order, discard, relics, run seed, and map position
+18. Resource save path uses user:// via FileAccess/ResourceSaver as appropriate. 48 Performance tests (Godot tooling):
+• Turn on profiler and verify combat runs without spikes on:
+• reward screens (card widgets created/destroyed)
+• combat start (definition loading) Godot explicitly recommends profiler-led optimization. 35
+Suggested prompt list for Codex/Copilot implementation
+Prompts are organized by subsystem to match the architecture above.
+ 29
+
+--- PAGE 30 ---
+   Core simulation - “Implement MatchState , RallyState , and Deck as RefCounted classes in Godot 4.6.1. Ensure deterministic RNG seeded by run seed + encounter id.” - “Write tests for tennis scoring (Love/15/30/40/Deuce/Advantage/Game)andintegrateintoa TennisScore class.”
+Data layer - “Create CardDef , RelicDef , EnemyDef as Resource classes with exported fields and type hints. Add a loader that can also override values from JSON.” - “Write a validator that checks every card id referenced by decks exists; fail fast on boot.”
+Overworld path tree - “Implement a Slay-the-Spire-like path generator: nodes per floor, adjacency constraints, elites and shops on weighted intervals, seeded randomness.”
+Combat UI - “Create Combat.tscn with CardHandView , CourtView , IntentView , and a MatchController node. UI updates only from emitted events and does not read simulation directly
+except on initialization.”
+Rally resolution - “Implement rally resolution with RP meter, ball state, position state, and statuses. Add a four-phase point loop (setup, rally turns, resolution, between-point).”
+Enemy AI - “Implement enemy AI with FSM states ( ServeMode , Defend , Attack , NetPlay , CloseOut ) and per-card utility scoring. Provide hooks for boss scripting.”
+Saving - “Implement save/load using FileAccess to user://saves/ with a SaveGame Resource or JSON, including run seed, deck, relics, stats, and map position.”
+Performance - “Add a debug overlay reading Performance.get_monitor() for FPS, draw calls, and memory; toggle via debug flag.” 36
+1 5 6 11 41 42 https://www.itftennis.com/media/7221/2026-rules-of-tennis-english.pdf https://www.itftennis.com/media/7221/2026-rules-of-tennis-english.pdf
+2 13 https://godotengine.org/article/maintenance-release-godot-4-6-1/ https://godotengine.org/article/maintenance-release-godot-4-6-1/
+3 17 https://docs.godotengine.org/en/stable/tutorials/best_practices/node_alternatives.html https://docs.godotengine.org/en/stable/tutorials/best_practices/node_alternatives.html
+4 9 25 https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+7 45 https://www.gamedeveloper.com/programming/gdc-2005-proceeding-handling-complexity-in-the-i- halo-2-i-ai
+https://www.gamedeveloper.com/programming/gdc-2005-proceeding-handling-complexity-in-the-i-halo-2-i-ai
+8 31 https://docs.godotengine.org/en/stable/tutorials/io/runtime_file_loading_and_saving.html https://docs.godotengine.org/en/stable/tutorials/io/runtime_file_loading_and_saving.html
+10 https://gdcvault.com/play/mediaProxy.php?sid=1026309 https://gdcvault.com/play/mediaProxy.php?sid=1026309
+                   30
+
+--- PAGE 31 ---
+12 https://godotengine.org/releases/4.6/ https://godotengine.org/releases/4.6/
+14 https://docs.godotengine.org/en/4.4/about/release_policy.html https://docs.godotengine.org/en/4.4/about/release_policy.html
+15 43 https://godotengine.org/download/archive/ https://godotengine.org/download/archive/
+16 https://docs.godotengine.org/en/stable/getting_started/step_by_step/nodes_and_scenes.html https://docs.godotengine.org/en/stable/getting_started/step_by_step/nodes_and_scenes.html
+18 https://docs.godotengine.org/en/stable/classes/class_refcounted.html https://docs.godotengine.org/en/stable/classes/class_refcounted.html
+19 https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+20 https://docs.godotengine.org/en/stable/classes/class_packedscene.html https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+21 https://docs.godotengine.org/en/stable/classes/class_node.html https://docs.godotengine.org/en/stable/classes/class_node.html
+22 https://docs.godotengine.org/en/4.4/classes/class_signal.html https://docs.godotengine.org/en/4.4/classes/class_signal.html
+23 https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_internal_nodes.html https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_internal_nodes.html
+24 40 47 https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
+26 28 48 https://docs.godotengine.org/en/stable/classes/class_fileaccess.html https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+27 JSON — Godot Engine (4.4) documentation in English https://docs.godotengine.org/en/4.4/classes/class_json.html?utm_source=chatgpt.com
+29 https://docs.godotengine.org/en/stable/classes/class_configfile.html https://docs.godotengine.org/en/stable/classes/class_configfile.html
+30 ResourceLoader - Godot Docs https://docs.godotengine.org/en/stable/classes/class_resourceloader.html?utm_source=chatgpt.com
+32 https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/index.html https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/index.html
+33 https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_differences.html https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_differences.html
+34 https://godotengine.org/article/platform-state-in-csharp-for-godot-4-2/ https://godotengine.org/article/platform-state-in-csharp-for-godot-4-2/
+35 https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html
+31
+
+--- PAGE 32 ---
+36 https://docs.godotengine.org/en/stable/classes/class_performance.html https://docs.godotengine.org/en/stable/classes/class_performance.html
+37 https://docs.godotengine.org/en/3.5/tutorials/performance/batching.html https://docs.godotengine.org/en/3.5/tutorials/performance/batching.html
+38 https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html
+39 https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html
+44 Tennis Scoring: Points, Sets & Games | Tennis Rules https://www.usta.com/en/home/improve/tips-and-instruction/national/tennis-scoring-rules.html?utm_source=chatgpt.com
+46 https://gameprogrammingpatterns.com/state.html https://gameprogrammingpatterns.com/state.html
+32
+
